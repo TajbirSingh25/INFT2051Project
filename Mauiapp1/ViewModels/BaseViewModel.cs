@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mauiapp1.ViewModels
+
+namespace MauiApp1.ViewModels
 {
     public partial class BaseViewModel : ObservableObject
     {
         [ObservableProperty]
-        public bool _isBusy;
-       
+        private bool isBusy;
+
         [ObservableProperty]
-        public string _title;
+        private string title;
     }
 }
