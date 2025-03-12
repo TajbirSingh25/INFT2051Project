@@ -50,11 +50,7 @@ namespace Mauiapp1
         }
         private void OnAddItemClicked(object sender, EventArgs e)
         {
-            // Handle "Add Item" icon click
-            DisplayAlert("Add Item", "Navigate to the Add Item page or show a dialog.", "OK");
-
-            // Example: Navigate to a new page for adding an item
-            // Navigation.PushAsync(new AddItemPage());
+            // Add your code here to handle the add item action
         }
     }
 }
