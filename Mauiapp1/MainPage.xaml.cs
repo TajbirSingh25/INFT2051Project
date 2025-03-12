@@ -48,5 +48,13 @@ namespace Mauiapp1
         {
             Navigation.PushAsync(new ProfilePage());
         }
+        private void OnAddItemClicked(object sender, EventArgs e)
+        {
+            // Handle "Add Item" icon click
+            DisplayAlert("Add Item", "Navigate to the Add Item page or show a dialog.", "OK");
+
+            // Example: Navigate to a new page for adding an item
+            // Navigation.PushAsync(new AddItemPage());
+        }
     }
 }

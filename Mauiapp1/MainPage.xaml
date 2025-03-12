@@ -81,12 +81,12 @@
               Margin="0,10,0,0">
 
             <!-- List Item Button -->
-            <Button Grid.Column="0"
-                    Text="List Item"
-                    BackgroundColor="#007bff"
-                    TextColor="White"
-                    CornerRadius="5"
-                    Clicked="OnListItemClicked"/>
+            <ImageButton Grid.Column="1"
+                         Source="add_icon.png" 
+                         BackgroundColor="Transparent"
+                         WidthRequest="40"
+                         HeightRequest="40"
+                         Clicked="OnAddItemClicked"/>
 
             <!-- Profile Icon -->
             <ImageButton Grid.Column="1"
@@ -96,5 +96,19 @@
                          HeightRequest="40"
                          Clicked="OnProfileClicked"/>
         </Grid>
+        <Button Grid.Row="4"
+                Text="+"
+                FontSize="24"
+                FontAttributes="Bold"
+                TextColor="White"
+                BackgroundColor="#FF4081"
+                WidthRequest="56"
+                HeightRequest="56"
+                CornerRadius="28"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="0,0,15,15"
+                Clicked="OnAddItemClicked"/>
+        
     </Grid>
 </ContentPage>
