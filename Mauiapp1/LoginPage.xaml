@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="YourAppNamespace.LoginPage"
+             xmlns:viewmodels="clr-namespace:Mauiapp1.ViewModels"
+             x:Class="Mauiapp1.LoginPage"
+             x:DataType="viewmodels:LoginViewModel"
              Title="Login">
 
     <Grid RowDefinitions="*, Auto, *">
-        <!-- Top half of the screen (empty for now) -->
+        <!-- Top half of the screen (logo area) -->
         <StackLayout Grid.Row="0" VerticalOptions="End" Margin="0,0,0,20">
-            <!-- Optional: You can add a logo or app name here -->
             <Image Source="your_logo.png" 
                    HeightRequest="100" 
                    WidthRequest="100"
@@ -20,16 +21,25 @@
 
         <!-- Login form - at the top portion of bottom half -->
         <StackLayout Grid.Row="1" Padding="20">
+            <!-- Error message display -->
+            <Label Text="{Binding ErrorMessage}"
+                   IsVisible="{Binding IsErrorVisible}"
+                   TextColor="Red"
+                   Margin="0,0,0,10"/>
+
             <Entry x:Name="UsernameEntry"
                    Placeholder="Username"
+                   Text="{Binding Username, Mode=TwoWay}"
                    Margin="0,0,0,15"/>
 
             <Entry x:Name="PasswordEntry"
                    Placeholder="Password"
+                   Text="{Binding Password, Mode=TwoWay}"
                    IsPassword="True"
                    Margin="0,0,0,20"/>
 
             <Button Text="Login"
+                    Command="{Binding LoginCommand}"
                     BackgroundColor="#007bff"
                     TextColor="White"
                     CornerRadius="5"
@@ -38,13 +48,16 @@
             <Label Text="Forgot password?"
                    HorizontalOptions="Center"
                    TextColor="#007bff"
-                   FontSize="14"/>
+                   FontSize="14">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}"/>
+                </Label.GestureRecognizers>
+            </Label>
         </StackLayout>
 
-        <!-- Bottom portion of the screen (empty for now) -->
+        <!-- Bottom portion of the screen -->
         <StackLayout Grid.Row="2">
-            <!-- You can add additional UI elements here -->
+            <!-- Additional UI elements could go here -->
         </StackLayout>
     </Grid>
-
 </ContentPage>

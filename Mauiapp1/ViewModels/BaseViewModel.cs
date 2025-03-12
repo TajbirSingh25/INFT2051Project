@@ -1,19 +1,59 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-
-namespace MauiApp1.ViewModels
+namespace Mauiapp1.ViewModels
 {
-    public partial class BaseViewModel : ObservableObject
+    public class BaseViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private bool isBusy;
+        private bool _isBusy;
+        private string _title;
 
-        [ObservableProperty]
-        private string title;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
+        }
+
+        public string Title
+        {
+            get => _title;
+            set => SetProperty(ref _title, value);
+        }
+
+        // Helper method for async operations
+        protected async Task ExecuteAsync(Task task, bool showBusy = true)
+        {
+            if (showBusy)
+                IsBusy = true;
+
+            try
+            {
+                await task;
+            }
+            finally
+            {
+                if (showBusy)
+                    IsBusy = false;
+            }
+        }
+
+        // Helper method for executing a function asynchronously
+        protected async Task<TResult> ExecuteAsync<TResult>(Task<TResult> task, bool showBusy = true)
+        {
+            if (showBusy)
+                IsBusy = true;
+
+            try
+            {
+                return await task;
+            }
+            finally
+            {
+                if (showBusy)
+                    IsBusy = false;
+            }
+        }
     }
 }

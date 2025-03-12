@@ -1,46 +1,82 @@
-﻿
+﻿using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Mauiapp1;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using Mauiapp1.Services;
 
-namespace MauiApp1.ViewModels
+namespace Mauiapp1.ViewModels
 {
-    public partial class LoginPageViewModel : BaseViewModel
+    public partial class LoginViewModel : BaseViewModel
     {
-        [ObservableProperty]
-        private string username;
+        private readonly IAuthService _authService;
+        private readonly INavigationService _navigationService;
 
         [ObservableProperty]
-        private string password;
+        private string _username;
 
-        public LoginPageViewModel()
+        [ObservableProperty]
+        private string _password;
+
+        [ObservableProperty]
+        private string _errorMessage;
+
+        [ObservableProperty]
+        private bool _isErrorVisible;
+
+        public LoginViewModel(IAuthService authService, INavigationService navigationService)
         {
             Title = "Login";
+            _authService = authService;
+            _navigationService = navigationService;
         }
 
         [RelayCommand]
-        private async Task LoginAsync()
+        private async Task Login()
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
-                await App.Current.MainPage.DisplayAlert("Error", "Please enter both username and password.", "OK");
+                ErrorMessage = "Please enter username and password";
+                IsErrorVisible = true;
                 return;
             }
 
-            // Simulated authentication (replace with real authentication logic)
-            if (Username == "admin" && Password == "password123")
+            await ExecuteAsync(LoginAsync());
+        }
+
+        private async Task LoginAsync()
+        {
+            try
             {
-                await App.Current.MainPage.DisplayAlert("Success", "Login successful!", "OK");
-                // Navigate to another page (update this with actual navigation logic)
+                IsErrorVisible = false;
+
+                // Call the authentication service
+                bool isAuthenticated = await _authService.LoginAsync(Username, Password);
+
+                if (isAuthenticated)
+                {
+                    // Navigate to the main page on successful login
+                    await _navigationService.NavigateToAsync("///MainPage");
+
+                    // Clear the password
+                    Password = string.Empty;
+                }
+                else
+                {
+                    ErrorMessage = "Invalid username or password";
+                    IsErrorVisible = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await App.Current.MainPage.DisplayAlert("Error", "Invalid credentials. Try again.", "OK");
+                ErrorMessage = $"Login failed: {ex.Message}";
+                IsErrorVisible = true;
             }
         }
 
-        public ICommand LoginCommand => new AsyncRelayCommand(LoginAsync);
+        [RelayCommand]
+        private async Task ForgotPassword()
+        {
+            await _navigationService.NavigateToAsync("ForgotPasswordPage");
+        }
     }
 }

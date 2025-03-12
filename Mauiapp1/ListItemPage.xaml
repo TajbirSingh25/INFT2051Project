@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Mauiapp1.ListItemPage"
+             Title="List Item">
+
+    <StackLayout Padding="20" Spacing="10">
+        <Label Text="Add Images"
+               FontSize="18"
+               HorizontalOptions="Center"/>
+
+        <Button Text="Upload Image"
+                BackgroundColor="#007bff"
+                TextColor="White"
+                CornerRadius="5"
+                Clicked="OnUploadImageClicked"/>
+
+        <Button Text="Submit"
+                BackgroundColor="Green"
+                TextColor="White"
+                CornerRadius="5"
+                Clicked="OnSubmitClicked"/>
+    </StackLayout>
+</ContentPage>

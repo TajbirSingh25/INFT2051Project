@@ -1,25 +1,52 @@
-﻿namespace Mauiapp1
+﻿using System.Collections.ObjectModel;
+using System.Reflection;
+using Mauiapp1.Models;
+using Microsoft.Maui.Controls;
+
+namespace Mauiapp1
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+        public ObservableCollection<Listing> Listings { get; set; }
 
         public MainPage()
         {
             InitializeComponent();
+
+            // Initialize listings
+            Listings = new ObservableCollection<Listing>
+            {
+                new Listing { ImageUrl = "listing1.jpg" },
+                new Listing { ImageUrl = "listing2.jpg" },
+                new Listing { ImageUrl = "listing3.jpg" },
+                new Listing { ImageUrl = "listing4.jpg" },
+                new Listing { ImageUrl = "listing5.jpg" },
+                new Listing { ImageUrl = "listing6.jpg" }
+            };
+
+            BindingContext = this;
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        // Event handlers
+        private void OnCategoryClicked(object sender, EventArgs e)
         {
-            count++;
+            var button = sender as Button;
+            DisplayAlert("Category Clicked", $"You clicked {button.Text}", "OK");
+        }
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
+        private void OnSeeMoreClicked(object sender, EventArgs e)
+        {
+            DisplayAlert("See More", "Showing more categories...", "OK");
+        }
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
+        private void OnListItemClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new ListItemPage());
+        }
+
+        private void OnProfileClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new ProfilePage());
         }
     }
-
 }
