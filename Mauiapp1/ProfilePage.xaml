@@ -4,22 +4,29 @@
              x:Class="Mauiapp1.ProfilePage"
              Title="Profile">
 
-    <StackLayout Padding="20" Spacing="10">
-        <Label Text="Profile Page"
-               FontSize="24"
-               HorizontalOptions="Center"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Padding="10" BackgroundColor="#f0f0f0">
+            <HorizontalStackLayout>
+                <ImageButton 
+                    Source="left_arrow.png"
+                    HeightRequest="40"
+                    WidthRequest="40"
+                    Padding="5"
+                    BackgroundColor="Transparent"
+                    Clicked="BackButton_Clicked"/>
+                <Label 
+                    Text="Profile" 
+                    VerticalOptions="Center"
+                    Margin="10,0,0,0"
+                    FontSize="18"
+                    FontAttributes="Bold"/>
+            </HorizontalStackLayout>
+        </Grid>
 
-        <Image Source="profile_icon.png"
-               WidthRequest="100"
-               HeightRequest="100"
-               HorizontalOptions="Center"/>
 
-        <Label Text="Username: JohnDoe"
-               FontSize="18"
-               HorizontalOptions="Center"/>
-
-        <Label Text="Email: john.doe@example.com"
-               FontSize="18"
-               HorizontalOptions="Center"/>
-    </StackLayout>
+    </Grid>
 </ContentPage>

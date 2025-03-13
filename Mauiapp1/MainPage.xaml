@@ -105,6 +105,6 @@
              HorizontalOptions="End"
              VerticalOptions="End"
              Margin="0,0,15,15"
-             Clicked="OnAddItemClicked"/>
+             Clicked="OnProfileClicked"/>
     </Grid>
 </ContentPage>

@@ -44,13 +44,14 @@ namespace Mauiapp1
             Navigation.PushAsync(new ListItemPage());
         }
 
-        private void OnProfileClicked(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new ProfilePage());
-        }
+
         private void OnAddItemClicked(object sender, EventArgs e)
         {
             // Add your code here to handle the add item action
+        }
+        private async void OnProfileClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new ProfilePage());
         }
     }
 }
