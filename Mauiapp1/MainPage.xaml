@@ -96,18 +96,15 @@
                          HeightRequest="40"
                          Clicked="OnProfileClicked"/>
         </Grid>
-        <Button Grid.Row="4" Grid.RowSpan="5"
-                Text="+"
-                FontSize="24"
-                FontAttributes="Bold"
-                WidthRequest="60"
-                HeightRequest="60"
-                CornerRadius="30"
-                BackgroundColor="#FF4081"
-                TextColor="White"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="0,0,20,80"
-                Clicked="OnAddItemClicked"/>
+        <ImageButton Grid.Row="4"
+             Source="profile.png"
+             BackgroundColor="#FFFFFF"
+             WidthRequest="56"
+             HeightRequest="56"
+             CornerRadius="28"
+             HorizontalOptions="End"
+             VerticalOptions="End"
+             Margin="0,0,15,15"
+             Clicked="OnAddItemClicked"/>
     </Grid>
 </ContentPage>
