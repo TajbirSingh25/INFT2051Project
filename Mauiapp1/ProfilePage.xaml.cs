@@ -10,5 +10,9 @@ namespace Mauiapp1
         {
             await Navigation.PushAsync(new MainPage());
         }
+        private void OnListItemClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new ListItemPage());
+        }
     }
 }

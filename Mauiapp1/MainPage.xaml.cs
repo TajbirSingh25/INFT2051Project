@@ -39,10 +39,7 @@ namespace Mauiapp1
             DisplayAlert("See More", "Showing more categories...", "OK");
         }
 
-        private void OnListItemClicked(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new ListItemPage());
-        }
+
 
 
         private void OnAddItemClicked(object sender, EventArgs e)

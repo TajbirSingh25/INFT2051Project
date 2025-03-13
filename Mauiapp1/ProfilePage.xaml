@@ -26,7 +26,21 @@
                     FontAttributes="Bold"/>
             </HorizontalStackLayout>
         </Grid>
+        <!-- Footer -->
+        <Grid Grid.Row="4"
+              ColumnDefinitions="*,Auto"
+              VerticalOptions="End"
+              HorizontalOptions="Center"
+              Margin="0,10,0,10">
 
+            <!-- List Item Button -->
+            <Button Grid.Column="0"
+                    Text="List Item"
+                    BackgroundColor="#007bff"
+                    TextColor="White"
+                    CornerRadius="5"
+                    Clicked="OnListItemClicked"/>
+        </Grid>
 
     </Grid>
 </ContentPage>

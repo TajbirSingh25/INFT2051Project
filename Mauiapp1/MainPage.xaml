@@ -74,28 +74,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- Footer -->
-        <Grid Grid.Row="4"
-              ColumnDefinitions="*,Auto"
-              VerticalOptions="End"
-              Margin="0,10,0,0">
 
-            <!-- List Item Button -->
-            <Button Grid.Column="0"
-                    Text="List Item"
-                    BackgroundColor="#007bff"
-                    TextColor="White"
-                    CornerRadius="5"
-                    Clicked="OnListItemClicked"/>
-
-            <!-- Profile Icon -->
-            <ImageButton Grid.Column="1"
-                         Source="profile_icon.png"
-                         BackgroundColor="Transparent"
-                         WidthRequest="40"
-                         HeightRequest="40"
-                         Clicked="OnProfileClicked"/>
-        </Grid>
         <ImageButton Grid.Row="4"
              Source="profile.png"
              BackgroundColor="#FFFFFF"
