@@ -35,7 +35,7 @@ namespace Mauiapp1.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
-                ErrorMessage = "Please enter username and password";
+                ErrorMessage = "Please enter both username and password";
                 IsErrorVisible = true;
                 return;
             }
@@ -48,15 +48,12 @@ namespace Mauiapp1.ViewModels
             try
             {
                 IsErrorVisible = false;
-
                 // Call the authentication service
                 bool isAuthenticated = await _authService.LoginAsync(Username, Password);
-
                 if (isAuthenticated)
                 {
                     // Navigate to the main page on successful login
                     await _navigationService.NavigateToAsync("///MainPage");
-
                     // Clear the password
                     Password = string.Empty;
                 }
@@ -78,5 +75,31 @@ namespace Mauiapp1.ViewModels
         {
             await _navigationService.NavigateToAsync("ForgotPasswordPage");
         }
+
+        [RelayCommand]
+
+        // In your LoginViewModel
+
+
+
+        
+        private async Task Register()
+        {
+            try
+            {
+                Console.WriteLine("Register command invoked");
+
+                // Try using Application.Current.MainPage directly for navigation
+                var registerPage = new RegisterPage(new RegisterViewModel(_authService, _navigationService));
+                await Application.Current.MainPage.Navigation.PushAsync(registerPage);
+
+                Console.WriteLine("Navigation to register page completed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Navigation exception: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            }
+        }
     }
-}
+    }

@@ -1,15 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:views="clr-namespace:Mauiapp1"
-       x:Class="Mauiapp1.AppShell">
+       xmlns:local="clr-namespace:Mauiapp1"
+       x:Class="Mauiapp1.AppShell"
+       Title="Mauiapp1">
 
-    <ShellContent Title="Login"
-                  ContentTemplate="{DataTemplate views:LoginPage}"
-                  Route="LoginPage" />
+    <!-- Define the routes in the Shell visual hierarchy -->
+    <ShellContent 
+        Title="Login"
+        ContentTemplate="{DataTemplate local:LoginPage}"
+        Route="LoginPage" />
 
-    <ShellContent Title="MainPage"
-                  ContentTemplate="{DataTemplate views:MainPage}"
-                  Route="MainPage" />
+    <!-- Add this if it's not already there -->
+    <ShellContent 
+        Title="Register"
+        ContentTemplate="{DataTemplate local:RegisterPage}"
+        Route="RegisterPage" />
 
-    
+    <ShellContent 
+        Title="Main"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+
+    <!-- Add other ShellContent elements for other pages as needed -->
 </Shell>

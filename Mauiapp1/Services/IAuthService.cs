@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Mauiapp1.Services
 {
@@ -10,8 +6,8 @@ namespace Mauiapp1.Services
     {
         Task<bool> LoginAsync(string username, string password);
         Task LogoutAsync();
+        Task<bool> RegisterUserAsync(string username, string password, string email, string firstName, string lastName);
         bool IsAuthenticated { get; }
+        string CurrentUsername { get; }
     }
 }
-
-
