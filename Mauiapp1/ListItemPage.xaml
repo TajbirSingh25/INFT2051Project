@@ -3,8 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Mauiapp1.ListItemPage"
              Title="List Item">
-
-    <StackLayout Padding="20" Spacing="10">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Padding="10" BackgroundColor="#f0f0f0">
+        <HorizontalStackLayout>
+            <ImageButton 
+                    Source="left_arrow.png"
+                    HeightRequest="40"
+                    WidthRequest="40"
+                    Padding="5"
+                    BackgroundColor="Transparent"
+                    Clicked="BackButton_Clicked"/>
+            <Label 
+                    Text="List Item" 
+                    VerticalOptions="Center"
+                    Margin="10,0,0,0"
+                    FontSize="18"
+                    FontAttributes="Bold"/>
+        </HorizontalStackLayout>
+    </Grid>
+        <StackLayout Grid.Row="1" Padding="20" Spacing="10">
         <Label Text="Add Images"
                FontSize="18"
                HorizontalOptions="Center"/>
@@ -21,4 +42,6 @@
                 CornerRadius="5"
                 Clicked="OnSubmitClicked"/>
     </StackLayout>
+    </Grid>
+
 </ContentPage>

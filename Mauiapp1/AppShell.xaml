@@ -5,6 +5,16 @@
        x:Class="Mauiapp1.AppShell"
        Title="Mauiapp1">
 
+    <Shell.TitleView>
+        <StackLayout Orientation="Horizontal">
+            <Label Text="REUSE" 
+                   FontFamily="Jockman"
+                   FontSize="40"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </StackLayout>
+    </Shell.TitleView>
+
     <!-- Define the routes in the Shell visual hierarchy -->
     <ShellContent 
         Title="Login"

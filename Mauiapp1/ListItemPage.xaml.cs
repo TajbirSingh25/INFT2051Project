@@ -19,5 +19,9 @@ namespace Mauiapp1
             DisplayAlert("Submit", "Listing submitted!", "OK");
             Navigation.PopAsync();
         }
+        private async void BackButton_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new ProfilePage());
+        }
     }
 }
