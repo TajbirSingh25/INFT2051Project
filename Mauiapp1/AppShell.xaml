@@ -7,7 +7,7 @@
 
     <Shell.TitleView>
         <StackLayout Orientation="Horizontal">
-            <Label Text="REUSE" 
+            <Label Text="" 
                    FontFamily="Jockman"
                    FontSize="40"
                    HorizontalOptions="Center"
