@@ -3,45 +3,117 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Mauiapp1.ListItemPage"
              Title="List Item">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Padding="10" BackgroundColor="#f0f0f0">
-        <HorizontalStackLayout>
-            <ImageButton 
-                    Source="left_arrow.png"
-                    HeightRequest="40"
-                    WidthRequest="40"
-                    Padding="5"
-                    BackgroundColor="Transparent"
-                    Clicked="BackButton_Clicked"/>
-            <Label 
-                    Text="List Item" 
-                    VerticalOptions="Center"
-                    Margin="10,0,0,0"
-                    FontSize="18"
-                    FontAttributes="Bold"/>
-        </HorizontalStackLayout>
-    </Grid>
-        <StackLayout Grid.Row="1" Padding="20" Spacing="10">
-        <Label Text="Add Images"
-               FontSize="18"
-               HorizontalOptions="Center"/>
+    <ScrollView>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <Button Text="Upload Image"
-                BackgroundColor="#007bff"
-                TextColor="White"
-                CornerRadius="5"
-                Clicked="OnUploadImageClicked"/>
+            <!-- Header -->
+            <Grid Grid.Row="0" Padding="10" BackgroundColor="#f0f0f0">
+                <HorizontalStackLayout>
+                    <ImageButton 
+                        Source="left_arrow.png"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        Padding="5"
+                        BackgroundColor="Transparent"
+                        Clicked="BackButton_Clicked"/>
+                    <Label 
+                        Text="List Item" 
+                        VerticalOptions="Center"
+                        Margin="10,0,0,0"
+                        FontSize="18"
+                        FontAttributes="Bold"/>
+                </HorizontalStackLayout>
+            </Grid>
 
-        <Button Text="Submit"
-                BackgroundColor="Green"
-                TextColor="White"
-                CornerRadius="5"
-                Clicked="OnSubmitClicked"/>
-    </StackLayout>
-    </Grid>
+            <!-- Content -->
+            <StackLayout Grid.Row="1" Padding="20" Spacing="15">
+                <!-- Image Upload Section -->
+                <Frame BorderColor="Gray" 
+                       CornerRadius="10" 
+                       HeightRequest="250" 
+                       Padding="0" 
+                       HasShadow="True">
+                    <Grid>
+                        <Image x:Name="SelectedImage" 
+                               Aspect="AspectFill"
+                               HorizontalOptions="Fill"
+                               VerticalOptions="Fill"/>
 
+                        <Button x:Name="AddImageButton"
+                                Text="Add Image"
+                                BackgroundColor="#007bff"
+                                TextColor="White"
+                                CornerRadius="5"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Clicked="OnAddImageClicked"/>
+
+                        <HorizontalStackLayout HorizontalOptions="End" 
+                                                VerticalOptions="End" 
+                                                Margin="0,0,10,10"
+                                                Spacing="10"
+                                                x:Name="ImageActionButtons"
+                                                IsVisible="False">
+                            <Button Text="Change"
+                                    BackgroundColor="Orange"
+                                    TextColor="White"
+                                    CornerRadius="5"
+                                    Clicked="OnChangeImageClicked"/>
+                            <Button Text="Delete"
+                                    BackgroundColor="Red"
+                                    TextColor="White"
+                                    CornerRadius="5"
+                                    Clicked="OnDeleteImageClicked"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Frame>
+
+                <!-- Product Details Form -->
+                <Label Text="Product Details" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center"/>
+
+                <!-- Product Name -->
+                <Entry Placeholder="Product Name"
+                       x:Name="ProductNameEntry"
+                       BackgroundColor="#f0f0f0"
+                       Keyboard="Text"/>
+
+                <!-- Product Description -->
+                <Editor Placeholder="Product Description"
+                        x:Name="ProductDescriptionEditor"
+                        HeightRequest="100"
+                        BackgroundColor="#f0f0f0"/>
+
+                <!-- Product Type Picker -->
+                <Picker Title="Select Product Type"
+                        x:Name="ProductTypePicker"
+                        BackgroundColor="#f0f0f0">
+                    <Picker.Items>
+                        <x:String>Electronics</x:String>
+                        <x:String>Non-Electronics</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <!-- Price -->
+                <Entry Placeholder="Price ($)"
+                       x:Name="PriceEntry"
+                       Keyboard="Numeric"
+                       BackgroundColor="#f0f0f0"/>
+
+                <!-- Submit Button -->
+                <Button Text="Submit Item"
+                        BackgroundColor="Green"
+                        TextColor="White"
+                        CornerRadius="5"
+                        Margin="0,20,0,0"
+                        Clicked="OnSubmitClicked"/>
+            </StackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>
