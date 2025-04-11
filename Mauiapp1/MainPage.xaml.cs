@@ -2,16 +2,19 @@
 using System.Reflection;
 using Mauiapp1.Models;
 using Microsoft.Maui.Controls;
+using Mauiapp1.Services;
 
 namespace Mauiapp1
 {
     public partial class MainPage : ContentPage
     {
+        private readonly IDatabaseService _databaseService;
         public ObservableCollection<Listing> Listings { get; set; }
 
-        public MainPage()
+        public MainPage(IDatabaseService databaseService)
         {
             InitializeComponent();
+            _databaseService = databaseService;
 
             // Initialize listings
             Listings = new ObservableCollection<Listing>
@@ -48,7 +51,7 @@ namespace Mauiapp1
         }
         private async void OnProfileClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new ProfilePage());
+            await Navigation.PushAsync(new ProfilePage(_databaseService));
         }
     }
 }

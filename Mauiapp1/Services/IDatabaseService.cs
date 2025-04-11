@@ -12,5 +12,13 @@ namespace Mauiapp1.Services
         Task<bool> UpdateUserAsync(User user);
         Task<bool> DeleteUserAsync(User user);
         Task<bool> UserExistsAsync(string username);
+
+        // Product methods
+        Task CreateProductsTableAsync();
+        Task<int> InsertProductAsync(Product product);
+        Task<List<Product>> GetAllProductsAsync();
+        Task<Product> GetProductByIdAsync(int id);
+        Task<int> UpdateProductAsync(Product product);
+        Task<int> DeleteProductAsync(Product product);
     }
 }

@@ -69,5 +69,43 @@ namespace Mauiapp1.Services
             var user = await GetUserAsync(username);
             return user != null;
         }
+        public async Task CreateProductsTableAsync()
+        {
+            await InitializeAsync();
+            await _database.CreateTableAsync<Product>();
+        }
+
+        public async Task<int> InsertProductAsync(Product product)
+        {
+            await InitializeAsync();
+            product.CreatedAt = DateTime.UtcNow;
+            return await _database.InsertAsync(product);
+        }
+
+        public async Task<List<Product>> GetAllProductsAsync()
+        {
+            await InitializeAsync();
+            return await _database.Table<Product>().ToListAsync();
+        }
+
+        public async Task<Product> GetProductByIdAsync(int id)
+        {
+            await InitializeAsync();
+            return await _database.Table<Product>()
+                .Where(p => p.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<int> UpdateProductAsync(Product product)
+        {
+            await InitializeAsync();
+            return await _database.UpdateAsync(product);
+        }
+
+        public async Task<int> DeleteProductAsync(Product product)
+        {
+            await InitializeAsync();
+            return await _database.DeleteAsync(product);
+        }
     }
 }

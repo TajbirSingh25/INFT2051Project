@@ -1,15 +1,25 @@
 using Microsoft.Maui.Storage;
+using Mauiapp1.Services;
+using Mauiapp1.Models; // Make sure this using directive is here
+using SQLite;
 using System.ComponentModel;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Media;
+using UploadImageApp.Services;
 
 namespace Mauiapp1;
 
 public partial class ListItemPage : ContentPage
 {
+    UploadImage uploadImage { get; set; }
     private FileResult _selectedImageFile;
+    private readonly IDatabaseService _databaseService;
 
-    public ListItemPage()
+    public ListItemPage(IDatabaseService databaseService)
     {
         InitializeComponent();
+        _databaseService = databaseService;
+        uploadImage = new UploadImage(this); // Pass the page reference
     }
 
     private void BackButton_Clicked(object sender, EventArgs e)
@@ -20,14 +30,14 @@ public partial class ListItemPage : ContentPage
     private async void OnAddImageClicked(object sender, EventArgs e)
     {
         var action = await DisplayActionSheet("Select Image", "Cancel", null,
-            "Take Photo", "Choose from Gallery");
+            "Take Photo", "Choose from Computer");
 
         switch (action)
         {
             case "Take Photo":
                 await TakePhotoAsync();
                 break;
-            case "Choose from Gallery":
+            case "Choose from Computer":
                 await PickPhotoAsync();
                 break;
         }
@@ -37,8 +47,30 @@ public partial class ListItemPage : ContentPage
     {
         try
         {
-            var photo = await MediaPicker.CapturePhotoAsync();
-            await LoadPhotoAsync(photo);
+            // Check if camera is available (new way)
+            if (DeviceInfo.Platform == DevicePlatform.Unknown || !MediaPicker.Default.IsCaptureSupported)
+            {
+                await DisplayAlert("Error", "Camera not available on this device", "OK");
+                return;
+            }
+
+            // Request camera permission
+#if ANDROID
+            var status = await Permissions.RequestAsync<Permissions.Camera>();
+            if (status != PermissionStatus.Granted)
+            {
+                await DisplayAlert("Permission Required", "Camera access is required to take photos", "OK");
+                return;
+            }
+#endif
+
+            // Launch camera and capture photo
+            var photo = await MediaPicker.Default.CapturePhotoAsync();
+
+            if (photo != null)
+            {
+                await LoadPhotoAsync(photo);
+            }
         }
         catch (Exception ex)
         {
@@ -50,15 +82,50 @@ public partial class ListItemPage : ContentPage
     {
         try
         {
-            var photo = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
+            Console.WriteLine("Starting photo picker...");
+            // Use the updated OpenMediaPickerAsync method that now uses FilePicker
+            var img = await uploadImage.OpenMediaPickerAsync();
+
+            if (img != null)
             {
-                Title = "Select Product Image"
-            });
-            await LoadPhotoAsync(photo);
+                Console.WriteLine($"Image selected: {img.FileName}, Size: {(await img.OpenReadAsync()).Length} bytes");
+                var imagefile = await uploadImage.Upload(img);
+
+                if (imagefile != null)
+                {
+                    Console.WriteLine("Image processed successfully, updating UI");
+
+                    // Create a memory stream from the base64 string
+                    var imageBytes = uploadImage.StringToByteBase64(imagefile.byteBase64);
+                    Console.WriteLine($"Image byte array length: {imageBytes.Length}");
+
+                    // Set the image source
+                    SelectedImage.Source = ImageSource.FromStream(() =>
+                        uploadImage.ByteArrayToStream(imageBytes)
+                    );
+
+                    // Update UI state
+                    _selectedImageFile = img;
+                    AddImageButton.IsVisible = false;
+                    ImageActionButtons.IsVisible = true;
+
+                    Console.WriteLine("UI updated successfully");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to process the image file");
+                    await DisplayAlert("Error", "Failed to process the selected image", "OK");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No image was selected or picker was canceled");
+            }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Failed to pick photo: {ex.Message}", "OK");
+            Console.WriteLine($"Error in PickPhotoAsync: {ex}");
+            await DisplayAlert("Error", $"Failed to pick image: {ex.Message}", "OK");
         }
     }
 
@@ -111,7 +178,6 @@ public partial class ListItemPage : ContentPage
             return;
         }
 
-        // Validate price is a number
         if (!decimal.TryParse(PriceEntry.Text, out decimal price))
         {
             await DisplayAlert("Validation Error", "Please enter a valid price", "OK");
@@ -125,15 +191,29 @@ public partial class ListItemPage : ContentPage
             Description = ProductDescriptionEditor.Text,
             Type = ProductTypePicker.SelectedItem.ToString(),
             Price = price,
-            ImagePath = await SaveImageAsync()
+            ImagePath = await SaveImageAsync(),
+            CreatedAt = DateTime.UtcNow
         };
 
-        // Save to database (you'll need to implement this)
-        await SaveProductToDatabase(product);
+        // Save to database
+        try
+        {
+            await _databaseService.CreateProductsTableAsync();
+            var result = await _databaseService.InsertProductAsync(product);
 
-        // Navigate back or show success message
-        await DisplayAlert("Success", "Product listed successfully!", "OK");
-        await Navigation.PopAsync();
+            if (result > 0)
+            {
+                await DisplayAlert("Success", "Product listed successfully!", "OK");
+                // Fix the navigation by using absolute route
+                await Shell.Current.GoToAsync(".."); // Goes back one page
+                                                     // OR if using NavigationPage:
+                                                     // await Navigation.PopAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Failed to save product: {ex.Message}", "OK");
+        }
     }
 
     private async Task<string> SaveImageAsync()
@@ -175,20 +255,8 @@ public partial class ListItemPage : ContentPage
         // Implement your database saving logic here
         // This is a placeholder - you'll need to use your specific database approach
         // For example, using SQLite:
-        // await _database.InsertProductAsync(product);
+        await _databaseService.InsertProductAsync(product);
 
         // Simulate database save
-        await Task.Delay(500);
     }
-}
-
-// Product model class
-public class Product
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string Type { get; set; }
-    public decimal Price { get; set; }
-    public string ImagePath { get; set; }
 }
