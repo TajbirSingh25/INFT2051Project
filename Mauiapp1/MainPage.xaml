@@ -10,7 +10,9 @@
 
         <!-- Search Bar -->
         <SearchBar Grid.Row="0"
+                   x:Name="MainSearchBar"
                    Placeholder="Search for items..."
+                   SearchButtonPressed="OnSearchButtonPressed"
                    BackgroundColor="LightGray"
                    Margin="0,0,0,10"/>
 
@@ -53,8 +55,10 @@
 
         <!-- Listings Section -->
         <CollectionView Grid.Row="3"
+                        x:Name="ListingsCollection"
                         ItemsSource="{Binding Listings}"
-                        SelectionMode="None">
+                        SelectionMode="Single"
+                        SelectionChanged="OnListingSelected">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical"
                                  Span="2"
@@ -63,17 +67,39 @@
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Padding="0"
-                           CornerRadius="10"
-                           BackgroundColor="LightGray"
-                           HeightRequest="150">
-                        <Image Source="{Binding ImageUrl}"
-                               Aspect="AspectFill"/>
-                    </Frame>
+                    <Grid Padding="5">
+                        <Frame Padding="0"
+                               CornerRadius="10"
+                               HasShadow="True"
+                               BorderColor="LightGray">
+                            <Grid RowDefinitions="*, Auto">
+                                <!-- Item Image -->
+                                <Image Grid.Row="0"
+                                       Source="{Binding ImageUrl}"
+                                       Aspect="AspectFill"
+                                       HeightRequest="150"/>
+
+                                <!-- Item Info -->
+                                <StackLayout Grid.Row="1"
+                                             BackgroundColor="White"
+                                             Padding="8">
+                                    <Label Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding Price, StringFormat='${0:N0}'}"
+                                           TextColor="Green"/>
+                                </StackLayout>
+                            </Grid>
+                        </Frame>
+
+                        <!-- Add a tap gesture recognizer as an alternative way to handle selection -->
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnListingTapped" CommandParameter="{Binding .}"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
 
         <ImageButton Grid.Row="4"
              Source="profile.png"

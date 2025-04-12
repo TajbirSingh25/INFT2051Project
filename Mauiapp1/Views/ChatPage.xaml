@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Mauiapp1.Models"
+             x:Class="Mauiapp1.Views.ChatPage"
+             Title="Chat">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator x:Name="LoadingIndicator"
+                          IsRunning="True"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"
+                          Grid.RowSpan="3"
+                          Color="#1E88E5"/>
+
+        <!-- Main Chat Container -->
+        <Grid x:Name="ChatContainer" RowDefinitions="Auto,*,Auto" IsVisible="False">
+
+            <!-- Header with seller information -->
+            <Grid Grid.Row="0" 
+                  ColumnDefinitions="Auto,*" 
+                  Padding="15" 
+                  BackgroundColor="#f5f5f5">
+                <Image Grid.Column="0"
+                       Source="{Binding SellerAvatarUrl}"
+                       HeightRequest="40"
+                       WidthRequest="40"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center">
+                    <Image.Clip>
+                        <EllipseGeometry 
+                            Center="20,20"
+                            RadiusX="20"
+                            RadiusY="20"/>
+                    </Image.Clip>
+                </Image>
+                <StackLayout Grid.Column="1"
+                             Spacing="0"
+                             Margin="10,0,0,0"
+                             VerticalOptions="Center">
+                    <Label Text="{Binding SellerName}" 
+                           FontAttributes="Bold"
+                           FontSize="16"/>
+                    <Label Text="{Binding ItemTitle}"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                </StackLayout>
+            </Grid>
+
+            <!-- Chat messages -->
+            <CollectionView Grid.Row="1" 
+                        x:Name="MessagesCollection"
+                        ItemsSource="{Binding Messages}"
+                        Margin="10"
+                        VerticalOptions="Fill">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ChatMessage">
+                        <Grid Padding="5,3" 
+                              ColumnDefinitions="Auto,*,Auto">
+
+                            <!-- User Avatar (for messages from other users) -->
+                            <Image Grid.Column="{Binding IsFromCurrentUser, Converter={StaticResource BoolToLastColumnConverter}}"
+                                   Source="{Binding AvatarUrl}"
+                                   HeightRequest="30" 
+                                   WidthRequest="30"
+                                   IsVisible="{Binding IsFromCurrentUser, Converter={StaticResource InvertedBoolConverter}}"
+                                   Margin="0,0,5,0">
+                                <Image.Clip>
+                                    <EllipseGeometry 
+                                        Center="15,15"
+                                        RadiusX="15"
+                                        RadiusY="15"/>
+                                </Image.Clip>
+                            </Image>
+
+                            <!-- Message bubble -->
+                            <Frame Grid.Column="1"
+                                   HasShadow="False"
+                                   Padding="10"
+                                   Margin="5,2"
+                                   CornerRadius="15"
+                                   BackgroundColor="{Binding IsFromCurrentUser, Converter={StaticResource MessageBubbleColorConverter}}"
+                                   HorizontalOptions="{Binding IsFromCurrentUser, Converter={StaticResource MessageAlignmentConverter}}">
+                                <StackLayout Spacing="2">
+                                    <Label Text="{Binding Message}"
+                                           TextColor="{Binding IsFromCurrentUser, Converter={StaticResource MessageTextColorConverter}}"
+                                           LineBreakMode="WordWrap"/>
+                                    <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}"
+                                           FontSize="10"
+                                           TextColor="{Binding IsFromCurrentUser, Converter={StaticResource TimestampColorConverter}}"
+                                           HorizontalOptions="End"/>
+                                </StackLayout>
+                            </Frame>
+
+                            <!-- My Avatar (for messages from current user) -->
+                            <Image Grid.Column="{Binding IsFromCurrentUser, Converter={StaticResource BoolToFirstColumnConverter}}"
+                                   Source="profile.png"
+                                   HeightRequest="30" 
+                                   WidthRequest="30"
+                                   IsVisible="{Binding IsFromCurrentUser}"
+                                   Margin="5,0,0,0">
+                                <Image.Clip>
+                                    <EllipseGeometry 
+                                        Center="15,15"
+                                        RadiusX="15"
+                                        RadiusY="15"/>
+                                </Image.Clip>
+                            </Image>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Message input -->
+            <Grid Grid.Row="2" 
+                  ColumnDefinitions="*,Auto" 
+                  Padding="10"
+                  BackgroundColor="#f5f5f5">
+                <Frame Grid.Column="0"
+                       HasShadow="False"
+                       BorderColor="#e0e0e0"
+                       CornerRadius="20"
+                       Padding="15,0">
+                    <Entry x:Name="MessageEntry"
+                           Placeholder="Type a message..."
+                           VerticalOptions="Center"
+                           TextChanged="OnMessageTextChanged"
+                           Completed="OnSendClicked"/>
+                </Frame>
+                <Button Grid.Column="1"
+                        x:Name="SendButton"
+                        Text="Send"
+                        CornerRadius="20"
+                        BackgroundColor="#2196F3"
+                        TextColor="White"
+                        HeightRequest="40"
+                        WidthRequest="60"
+                        Margin="5,0,0,0"
+                        Clicked="OnSendClicked"
+                        IsEnabled="False"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>
