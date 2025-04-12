@@ -12,7 +12,9 @@ namespace Mauiapp1
             Routing.RegisterRoute("LoginPage", typeof(LoginPage));
             Routing.RegisterRoute("MainPage", typeof(MainPage));
             Routing.RegisterRoute("RegisterPage", typeof(RegisterPage));
-           
+            Routing.RegisterRoute("ProfilePage", typeof(ProfilePage));
+            Routing.RegisterRoute(nameof(ListItemPage), typeof(ListItemPage));
+
         }
     }
 }

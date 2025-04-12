@@ -1,6 +1,6 @@
 using Microsoft.Maui.Storage;
 using Mauiapp1.Services;
-using Mauiapp1.Models; // Make sure this using directive is here
+using Mauiapp1.Models;
 using SQLite;
 using System.ComponentModel;
 using Microsoft.Maui.ApplicationModel;
@@ -14,17 +14,33 @@ public partial class ListItemPage : ContentPage
     UploadImage uploadImage { get; set; }
     private FileResult _selectedImageFile;
     private readonly IDatabaseService _databaseService;
+    private string _imageBase64;
 
     public ListItemPage(IDatabaseService databaseService)
     {
         InitializeComponent();
         _databaseService = databaseService;
         uploadImage = new UploadImage(this); // Pass the page reference
+
+        // Initialize Products table when the page loads
+        InitializeProductsTable();
     }
 
-    private void BackButton_Clicked(object sender, EventArgs e)
+    private async void InitializeProductsTable()
     {
-        Navigation.PopAsync();
+        try
+        {
+            await _databaseService.CreateProductsTableAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing products table: {ex.Message}");
+        }
+    }
+
+    private async void BackButton_Clicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new ProfilePage(_databaseService));
     }
 
     private async void OnAddImageClicked(object sender, EventArgs e)
@@ -99,6 +115,9 @@ public partial class ListItemPage : ContentPage
                     var imageBytes = uploadImage.StringToByteBase64(imagefile.byteBase64);
                     Console.WriteLine($"Image byte array length: {imageBytes.Length}");
 
+                    // Store the base64 string for later use
+                    _imageBase64 = imagefile.byteBase64;
+
                     // Set the image source
                     SelectedImage.Source = ImageSource.FromStream(() =>
                         uploadImage.ByteArrayToStream(imageBytes)
@@ -145,7 +164,6 @@ public partial class ListItemPage : ContentPage
 
     private void OnChangeImageClicked(object sender, EventArgs e)
     {
-        // Changed from async void to just calling the method without await
         OnAddImageClicked(sender, e);
     }
 
@@ -153,67 +171,145 @@ public partial class ListItemPage : ContentPage
     {
         SelectedImage.Source = null;
         _selectedImageFile = null;
+        _imageBase64 = null;
         AddImageButton.IsVisible = true;
         ImageActionButtons.IsVisible = false;
     }
 
     private async void OnSubmitClicked(object sender, EventArgs e)
     {
-        // Validate inputs
-        if (string.IsNullOrWhiteSpace(ProductNameEntry.Text))
+        // Disable the button to prevent multiple submissions
+        Button submitButton = sender as Button;
+        if (submitButton != null)
         {
-            await DisplayAlert("Validation Error", "Please enter a product name", "OK");
-            return;
+            submitButton.IsEnabled = false;
         }
 
-        if (ProductTypePicker.SelectedIndex == -1)
-        {
-            await DisplayAlert("Validation Error", "Please select a product type", "OK");
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(PriceEntry.Text))
-        {
-            await DisplayAlert("Validation Error", "Please enter a price", "OK");
-            return;
-        }
-
-        if (!decimal.TryParse(PriceEntry.Text, out decimal price))
-        {
-            await DisplayAlert("Validation Error", "Please enter a valid price", "OK");
-            return;
-        }
-
-        // Create product object
-        var product = new Product
-        {
-            Name = ProductNameEntry.Text,
-            Description = ProductDescriptionEditor.Text,
-            Type = ProductTypePicker.SelectedItem.ToString(),
-            Price = price,
-            ImagePath = await SaveImageAsync(),
-            CreatedAt = DateTime.UtcNow
-        };
-
-        // Save to database
         try
         {
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(ProductNameEntry.Text))
+            {
+                await DisplayAlert("Validation Error", "Please enter a product name", "OK");
+                return;
+            }
+
+            if (ProductTypePicker.SelectedIndex == -1)
+            {
+                await DisplayAlert("Validation Error", "Please select a product type", "OK");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(PriceEntry.Text))
+            {
+                await DisplayAlert("Validation Error", "Please enter a price", "OK");
+                return;
+            }
+
+            if (!decimal.TryParse(PriceEntry.Text, out decimal price))
+            {
+                await DisplayAlert("Validation Error", "Please enter a valid price", "OK");
+                return;
+            }
+
+            // Check if image is selected
+            if (_selectedImageFile == null)
+            {
+                bool proceed = await DisplayAlert("No Image",
+                    "You haven't added an image for this product. Do you want to continue without an image?",
+                    "Continue", "Cancel");
+
+                if (!proceed) return;
+            }
+
+            // Create product object
+            var product = new Product
+            {
+                Name = ProductNameEntry.Text,
+                Description = ProductDescriptionEditor.Text ?? "",
+                Type = ProductTypePicker.SelectedItem?.ToString() ?? "",
+                Price = price,
+                ImagePath = await SaveImageAsync(),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Debug information
+            Console.WriteLine($"Saving product: {product.Name}, {product.Type}, {product.Price:C}");
+
+            // Explicitly create products table if it doesn't exist
             await _databaseService.CreateProductsTableAsync();
+
+            // Save to database
             var result = await _databaseService.InsertProductAsync(product);
+            Console.WriteLine($"Database insert result: {result}");
 
             if (result > 0)
             {
                 await DisplayAlert("Success", "Product listed successfully!", "OK");
-                // Fix the navigation by using absolute route
-                await Shell.Current.GoToAsync(".."); // Goes back one page
-                                                     // OR if using NavigationPage:
-                                                     // await Navigation.PopAsync();
+
+                // Clear the form
+                ClearForm();
+
+                // Use Device.BeginInvokeOnMainThread to ensure UI operations happen on main thread
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    try
+                    {
+                        // Try different navigation approaches based on your app structure
+                        if (Navigation.NavigationStack.Count > 1)
+                        {
+                            await Navigation.PopAsync();
+                        }
+                        else
+                        {
+                            // If this is the root page, use Shell navigation if applicable
+                            // Or navigate to another page
+                            await Shell.Current.GoToAsync("..");
+                        }
+                    }
+                    catch (Exception navEx)
+                    {
+                        Console.WriteLine($"Navigation error: {navEx.Message}");
+                        // If navigation fails, just stay on the page
+                    }
+                });
             }
+            else
+            {
+                await DisplayAlert("Error", "Failed to save product. Please try again.", "OK");
+            }
+        }
+        catch (SQLiteException sqlEx)
+        {
+            // Handle specific database errors
+            Console.WriteLine($"SQLite error: {sqlEx.Message}");
+            await DisplayAlert("Database Error", $"Failed to save product: {sqlEx.Message}", "OK");
         }
         catch (Exception ex)
         {
+            // Log the full exception details
+            Console.WriteLine($"Exception during product submission: {ex}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
             await DisplayAlert("Error", $"Failed to save product: {ex.Message}", "OK");
         }
+        finally
+        {
+            // Re-enable the button
+            if (submitButton != null)
+            {
+                submitButton.IsEnabled = true;
+            }
+        }
+    }
+
+    private void ClearForm()
+    {
+        // Clear all form fields
+        ProductNameEntry.Text = string.Empty;
+        ProductDescriptionEditor.Text = string.Empty;
+        ProductTypePicker.SelectedIndex = -1;
+        PriceEntry.Text = string.Empty;
+        OnDeleteImageClicked(null, null); // Reset image state
     }
 
     private async Task<string> SaveImageAsync()
@@ -245,18 +341,9 @@ public partial class ListItemPage : ContentPage
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Failed to save image: {ex.Message}");
             await DisplayAlert("Error", $"Failed to save image: {ex.Message}", "OK");
             return null;
         }
-    }
-
-    private async Task SaveProductToDatabase(Product product)
-    {
-        // Implement your database saving logic here
-        // This is a placeholder - you'll need to use your specific database approach
-        // For example, using SQLite:
-        await _databaseService.InsertProductAsync(product);
-
-        // Simulate database save
     }
 }

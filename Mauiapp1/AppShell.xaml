@@ -28,9 +28,19 @@
         Route="RegisterPage" />
 
     <ShellContent 
-        Title="Main"
+        Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
+
+    <ShellContent 
+        Title="Profile"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="ProfilePage" />
+
+    <ShellContent 
+        Title="ListItem"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="ListItemPage" />
 
     <!-- Add other ShellContent elements for other pages as needed -->
 </Shell>
