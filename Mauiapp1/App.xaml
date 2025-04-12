@@ -2,7 +2,6 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Mauiapp1"
-             xmlns:converters="clr-namespace:Mauiapp1.Converters"
              x:Class="Mauiapp1.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -10,36 +9,6 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <!-- Application colors -->
-            <Color x:Key="PrimaryColor">#512BD4</Color>
-            <Color x:Key="SecondaryColor">#DFD8F7</Color>
-            <Color x:Key="TextColor">#000000</Color>
-            <Color x:Key="AccentColor">#FF9800</Color>
-            <Color x:Key="BackgroundColor">#FFFFFF</Color>
-
-            <!-- Chat UI Converters -->
-            <converters:BoolToFirstColumnConverter x:Key="BoolToFirstColumnConverter" />
-            <converters:BoolToLastColumnConverter x:Key="BoolToLastColumnConverter" />
-            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
-            <converters:MessageBubbleColorConverter x:Key="MessageBubbleColorConverter" />
-            <converters:MessageTextColorConverter x:Key="MessageTextColorConverter" />
-            <converters:TimestampColorConverter x:Key="TimestampColorConverter" />
-            <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
-
-            <!-- Application styles -->
-            <Style TargetType="Button">
-                <Setter Property="TextColor" Value="White"/>
-                <Setter Property="FontFamily" Value="OpenSansRegular"/>
-                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
-                <Setter Property="Padding" Value="14,10"/>
-                <Setter Property="CornerRadius" Value="8"/>
-            </Style>
-
-            <Style TargetType="Label">
-                <Setter Property="FontFamily" Value="OpenSansRegular" />
-                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

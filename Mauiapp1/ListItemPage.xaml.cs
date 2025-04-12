@@ -15,16 +15,27 @@ public partial class ListItemPage : ContentPage
     private FileResult _selectedImageFile;
     private readonly IDatabaseService _databaseService;
     private string _imageBase64;
+    private bool _isEditMode = false;
+    private Product _productToEdit;
 
-    public ListItemPage(IDatabaseService databaseService)
+    public ListItemPage(IDatabaseService databaseService, Product productToEdit = null)
     {
         InitializeComponent();
         _databaseService = databaseService;
-        uploadImage = new UploadImage(this); // Pass the page reference
+        uploadImage = new UploadImage(this);
 
-        // Initialize Products table when the page loads
+        // Initialize Products table
         InitializeProductsTable();
+
+        // Check if we're in edit mode
+        if (productToEdit != null)
+        {
+            _isEditMode = true;
+            _productToEdit = productToEdit;
+            LoadProductForEditing(productToEdit);
+        }
     }
+
 
     private async void InitializeProductsTable()
     {
@@ -46,7 +57,7 @@ public partial class ListItemPage : ContentPage
     private async void OnAddImageClicked(object sender, EventArgs e)
     {
         var action = await DisplayActionSheet("Select Image", "Cancel", null,
-            "Take Photo", "Choose from Computer");
+            "Take Photo", "Choose from Gallery");
 
         switch (action)
         {
@@ -176,6 +187,44 @@ public partial class ListItemPage : ContentPage
         ImageActionButtons.IsVisible = false;
     }
 
+    private async void LoadProductForEditing(Product product)
+    {
+        // Update page title
+        Title = "Edit Item";
+
+        // Fill in the form fields
+        ProductNameEntry.Text = product.Name;
+        ProductDescriptionEditor.Text = product.Description;
+
+        // Set product type
+        int typeIndex = -1;
+        for (int i = 0; i < ProductTypePicker.Items.Count; i++)
+        {
+            if (ProductTypePicker.Items[i] == product.Type)
+            {
+                typeIndex = i;
+                break;
+            }
+        }
+        if (typeIndex >= 0)
+        {
+            ProductTypePicker.SelectedIndex = typeIndex;
+        }
+
+        PriceEntry.Text = product.Price.ToString();
+
+        // Load the product image if it exists
+        if (!string.IsNullOrEmpty(product.ImagePath) && File.Exists(product.ImagePath))
+        {
+            SelectedImage.Source = ImageSource.FromFile(product.ImagePath);
+            AddImageButton.IsVisible = false;
+            ImageActionButtons.IsVisible = true;
+        }
+
+        // Change submit button text
+        SubmitButton.Text = "Save Changes";
+    }
+
     private async void OnSubmitClicked(object sender, EventArgs e)
     {
         // Disable the button to prevent multiple submissions
@@ -212,8 +261,8 @@ public partial class ListItemPage : ContentPage
                 return;
             }
 
-            // Check if image is selected
-            if (_selectedImageFile == null)
+            // Check if image is selected in add mode
+            if (!_isEditMode && _selectedImageFile == null)
             {
                 bool proceed = await DisplayAlert("No Image",
                     "You haven't added an image for this product. Do you want to continue without an image?",
@@ -222,79 +271,88 @@ public partial class ListItemPage : ContentPage
                 if (!proceed) return;
             }
 
-            // Create product object
-            var product = new Product
+            // Create or update product object
+            Product product;
+
+            if (_isEditMode)
             {
-                Name = ProductNameEntry.Text,
-                Description = ProductDescriptionEditor.Text ?? "",
-                Type = ProductTypePicker.SelectedItem?.ToString() ?? "",
-                Price = price,
-                ImagePath = await SaveImageAsync(),
-                CreatedAt = DateTime.UtcNow
-            };
+                // Update existing product
+                product = _productToEdit;
+                product.Name = ProductNameEntry.Text;
+                product.Description = ProductDescriptionEditor.Text ?? "";
+                product.Type = ProductTypePicker.SelectedItem?.ToString() ?? "";
+                product.Price = price;
 
-            // Debug information
-            Console.WriteLine($"Saving product: {product.Name}, {product.Type}, {product.Price:C}");
-
-            // Explicitly create products table if it doesn't exist
-            await _databaseService.CreateProductsTableAsync();
-
-            // Save to database
-            var result = await _databaseService.InsertProductAsync(product);
-            Console.WriteLine($"Database insert result: {result}");
-
-            if (result > 0)
-            {
-                await DisplayAlert("Success", "Product listed successfully!", "OK");
-
-                // Clear the form
-                ClearForm();
-
-                // Use Device.BeginInvokeOnMainThread to ensure UI operations happen on main thread
-                MainThread.BeginInvokeOnMainThread(async () =>
+                // Only update the image if a new one was selected
+                if (_selectedImageFile != null)
                 {
-                    try
-                    {
-                        // Try different navigation approaches based on your app structure
-                        if (Navigation.NavigationStack.Count > 1)
-                        {
-                            await Navigation.PopAsync();
-                        }
-                        else
-                        {
-                            // If this is the root page, use Shell navigation if applicable
-                            // Or navigate to another page
-                            await Shell.Current.GoToAsync("..");
-                        }
-                    }
-                    catch (Exception navEx)
-                    {
-                        Console.WriteLine($"Navigation error: {navEx.Message}");
-                        // If navigation fails, just stay on the page
-                    }
-                });
+                    product.ImagePath = await SaveImageAsync();
+                }
+
+                // No need to update CreatedAt timestamp for edits
             }
             else
             {
-                await DisplayAlert("Error", "Failed to save product. Please try again.", "OK");
+                // Create new product
+                product = new Product
+                {
+                    Name = ProductNameEntry.Text,
+                    Description = ProductDescriptionEditor.Text ?? "",
+                    Type = ProductTypePicker.SelectedItem?.ToString() ?? "",
+                    Price = price,
+                    ImagePath = await SaveImageAsync(),
+                    CreatedAt = DateTime.UtcNow
+                };
             }
-        }
-        catch (SQLiteException sqlEx)
-        {
-            // Handle specific database errors
-            Console.WriteLine($"SQLite error: {sqlEx.Message}");
-            await DisplayAlert("Database Error", $"Failed to save product: {sqlEx.Message}", "OK");
+
+            // Debug information
+            Console.WriteLine($"{(_isEditMode ? "Updating" : "Saving")} product: {product.Name}, {product.Type}, {product.Price:C}");
+
+            // Ensure products table exists
+            await _databaseService.CreateProductsTableAsync();
+
+            // Save to database (insert or update)
+            int result;
+            if (_isEditMode)
+            {
+                result = await _databaseService.UpdateProductAsync(product);
+            }
+            else
+            {
+                result = await _databaseService.InsertProductAsync(product);
+            }
+
+            Console.WriteLine($"Database {(_isEditMode ? "update" : "insert")} result: {result}");
+
+            if (result > 0)
+            {
+                await DisplayAlert("Success",
+                    _isEditMode ? "Product updated successfully!" : "Product listed successfully!",
+                    "OK");
+
+                // Clear the form if not in edit mode
+                if (!_isEditMode)
+                {
+                    ClearForm();
+                }
+
+                // Navigate back
+                await Navigation.PopAsync();
+            }
+            else
+            {
+                await DisplayAlert("Error",
+                    _isEditMode ? "Failed to update product. Please try again." : "Failed to save product. Please try again.",
+                    "OK");
+            }
         }
         catch (Exception ex)
         {
-            // Log the full exception details
-            Console.WriteLine($"Exception during product submission: {ex}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
-            await DisplayAlert("Error", $"Failed to save product: {ex.Message}", "OK");
+            Console.WriteLine($"Exception during product {(_isEditMode ? "update" : "submission")}: {ex}");
+            await DisplayAlert("Error", $"Failed to {(_isEditMode ? "update" : "save")} product: {ex.Message}", "OK");
         }
         finally
         {
-            // Re-enable the button
             if (submitButton != null)
             {
                 submitButton.IsEnabled = true;
@@ -347,3 +405,4 @@ public partial class ListItemPage : ContentPage
         }
     }
 }
+

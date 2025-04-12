@@ -3,12 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Mauiapp1.ProfilePage"
              Title="Profile">
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Profile Section -->
             <RowDefinition Height="*"/>
+            <!-- Items List -->
+            <RowDefinition Height="Auto"/>
+            <!-- List Item Button - Always visible -->
         </Grid.RowDefinitions>
+
+        <!-- Header -->
         <Grid Grid.Row="0" Padding="10" BackgroundColor="#f0f0f0">
             <HorizontalStackLayout>
                 <ImageButton 
@@ -26,21 +33,162 @@
                     FontAttributes="Bold"/>
             </HorizontalStackLayout>
         </Grid>
-        <!-- Footer -->
-        <Grid Grid.Row="4"
-              ColumnDefinitions="*,Auto"
-              VerticalOptions="End"
-              HorizontalOptions="Center"
-              Margin="0,10,0,10">
 
-            <!-- List Item Button -->
-            <Button Grid.Column="0"
-                    Text="List Item"
+        <!-- Profile Section -->
+        <StackLayout Grid.Row="1" Padding="20">
+            <!-- Profile Photo Section -->
+            <VerticalStackLayout HorizontalOptions="Center" 
+                                 Spacing="15" 
+                                 Margin="0,10,0,20">
+                <Frame CornerRadius="75" 
+                       HeightRequest="150" 
+                       WidthRequest="150" 
+                       Padding="0"
+                       IsClippedToBounds="True"
+                       BorderColor="LightGray"
+                       HasShadow="True">
+                    <Grid>
+                        <Image x:Name="ProfileImage" 
+                               Aspect="AspectFill"
+                               Source="default_profile.png" />
+
+                        <Button x:Name="AddProfilePhotoButton"
+                                Text="+"
+                                FontSize="30"
+                                BackgroundColor="#80000000"
+                                TextColor="White"
+                                CornerRadius="75"
+                                WidthRequest="150"
+                                HeightRequest="150"
+                                Opacity="0.7"
+                                Clicked="OnAddProfilePhotoClicked"/>
+                    </Grid>
+                </Frame>
+            </VerticalStackLayout>
+
+            <!-- Username and Full Name -->
+            <StackLayout Spacing="5" HorizontalOptions="Center" Margin="0,0,0,10">
+                <Label x:Name="UsernameLabel" 
+                       Text="Username" 
+                       FontSize="24" 
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"/>
+                <Label x:Name="FullNameLabel" 
+                       Text="Full Name" 
+                       FontSize="16"
+                       TextColor="Gray"
+                       HorizontalOptions="Center"/>
+            </StackLayout>
+
+            <!-- Divider -->
+            <BoxView HeightRequest="2" 
+                     BackgroundColor="#e0e0e0" 
+                     Margin="0,10,0,20"/>
+
+            <!-- My Items Header -->
+            <Label Text="My Listed Items" 
+                   FontSize="20" 
+                   FontAttributes="Bold"/>
+        </StackLayout>
+
+        <!-- Items List - Scrollable content -->
+        <ScrollView Grid.Row="2" Padding="20,0,20,10">
+            <CollectionView x:Name="ItemsCollectionView" 
+                           SelectionMode="Single" 
+                           SelectionChanged="OnItemSelected">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" 
+                               CornerRadius="10" 
+                               HasShadow="True" 
+                               BorderColor="LightGray">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <!-- Product Image -->
+                                <Frame Grid.Column="0" 
+                                       HeightRequest="80" 
+                                       WidthRequest="80" 
+                                       Padding="0"
+                                       CornerRadius="8"
+                                       IsClippedToBounds="True">
+                                    <Image Aspect="AspectFill"
+                                           Source="{Binding ImageSource}"/>
+                                </Frame>
+
+                                <!-- Product Details -->
+                                <VerticalStackLayout Grid.Column="1" 
+                                                     Margin="15,0,0,0"
+                                                     VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="16"/>
+                                    <Label Text="{Binding Type}" 
+                                           FontSize="14"
+                                           TextColor="Gray"/>
+                                    <Label Text="{Binding Price, StringFormat='${0:F2}'}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="16"
+                                           TextColor="#007bff"/>
+                                </VerticalStackLayout>
+
+                                <!-- Action Buttons -->
+                                <VerticalStackLayout Grid.Column="2" 
+                                                     Spacing="10"
+                                                     Margin="5,0,0,0"
+                                                     VerticalOptions="Center">
+                                    <Button Text="Edit"
+                                            BackgroundColor="Orange"
+                                            TextColor="White"
+                                            HeightRequest="35"
+                                            WidthRequest="70"
+                                            FontSize="12"
+                                            CornerRadius="5"
+                                            CommandParameter="{Binding Id}"
+                                            Clicked="OnEditItemClicked"/>
+                                    <Button Text="Delete"
+                                            BackgroundColor="Red"
+                                            TextColor="White"
+                                            HeightRequest="35"
+                                            WidthRequest="70"
+                                            FontSize="12"
+                                            CornerRadius="5"
+                                            CommandParameter="{Binding Id}"
+                                            Clicked="OnDeleteItemClicked"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <StackLayout VerticalOptions="Center" 
+                                HorizontalOptions="Center">
+                        <Image Source="empty_list.png" 
+                              HeightRequest="100" 
+                              Opacity="0.5"
+                              HorizontalOptions="Center"/>
+                        <Label Text="No items listed yet" 
+                              FontSize="18" 
+                              TextColor="Gray"
+                              HorizontalOptions="Center"
+                              Margin="0,20,0,0"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </ScrollView>
+
+        <!-- List Item Button - Fixed at the bottom, always visible -->
+        <Frame Grid.Row="3" 
+               Padding="20,10"
+               BorderColor="LightGray"
+               HasShadow="True"
+               BackgroundColor="White">
+            <Button Text="List an Item"
                     BackgroundColor="#007bff"
                     TextColor="White"
                     CornerRadius="5"
                     Clicked="OnListItemClicked"/>
-        </Grid>
-
+        </Frame>
     </Grid>
 </ContentPage>
