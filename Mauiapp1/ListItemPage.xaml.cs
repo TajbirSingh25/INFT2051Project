@@ -53,7 +53,7 @@ public partial class ListItemPage : ContentPage
             case "Take Photo":
                 await TakePhotoAsync();
                 break;
-            case "Choose from Computer":
+            case "Choose from Gallery":
                 await PickPhotoAsync();
                 break;
         }
