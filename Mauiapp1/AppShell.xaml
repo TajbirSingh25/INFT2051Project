@@ -21,7 +21,6 @@
         ContentTemplate="{DataTemplate local:LoginPage}"
         Route="LoginPage" />
 
-    <!-- Add this if it's not already there -->
     <ShellContent 
         Title="Register"
         ContentTemplate="{DataTemplate local:RegisterPage}"
@@ -32,15 +31,11 @@
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
+    <!-- Profile Page - using the correct namespace for your project structure -->
     <ShellContent 
         Title="Profile"
-        ContentTemplate="{DataTemplate local:MainPage}"
+        ContentTemplate="{DataTemplate local:ProfilePage}"
         Route="ProfilePage" />
 
-    <ShellContent 
-        Title="ListItem"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="ListItemPage" />
-
-    <!-- Add other ShellContent elements for other pages as needed -->
+    <!-- Define other pages that should be navigable as part of the main tab structure -->
 </Shell>

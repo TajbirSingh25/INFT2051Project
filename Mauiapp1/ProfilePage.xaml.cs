@@ -17,6 +17,7 @@ namespace Mauiapp1
         private ObservableCollection<ProductViewModel> _userProducts;
         private FileResult _selectedProfileImageFile;
         private User _currentUser;
+
         private string _profileImagePath; 
 
         public ProfilePage(IDatabaseService databaseService)
