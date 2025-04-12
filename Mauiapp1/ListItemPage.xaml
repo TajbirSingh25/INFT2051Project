@@ -96,7 +96,11 @@
                         BackgroundColor="#f0f0f0">
                     <Picker.Items>
                         <x:String>Electronics</x:String>
-                        <x:String>Non-Electronics</x:String>
+                        <x:String>Car</x:String>
+                        <x:String>Toys</x:String>
+                        <x:String>Watch</x:String>
+                        <x:String>Books</x:String>
+                        <x:String>Home Appliances</x:String>
                     </Picker.Items>
                 </Picker>
 
@@ -107,12 +111,14 @@
                        BackgroundColor="#f0f0f0"/>
 
                 <!-- Submit Button -->
-                <Button Text="Submit Item"
-                        BackgroundColor="Green"
-                        TextColor="White"
-                        CornerRadius="5"
-                        Margin="0,20,0,0"
-                        Clicked="OnSubmitClicked"/>
+                <!-- Submit Button -->
+                <Button x:Name="SubmitButton"
+        Text="Submit Item"
+        BackgroundColor="Green"
+        TextColor="White"
+        CornerRadius="5"
+        Margin="0,20,0,0"
+        Clicked="OnSubmitClicked"/>
             </StackLayout>
         </Grid>
     </ScrollView>
