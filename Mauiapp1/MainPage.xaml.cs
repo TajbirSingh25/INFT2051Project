@@ -11,6 +11,7 @@ namespace Mauiapp1
     {
         private readonly IDatabaseService _databaseService;
         public ObservableCollection<Listing> Listings { get; set; }
+        private bool _moreCategoriesVisible = false;
 
         public MainPage(IDatabaseService databaseService)
         {
@@ -27,7 +28,7 @@ namespace Mauiapp1
                     Description = "Luxury Rolex Submariner watch in excellent condition. Water-resistant to 300 meters with automatic movement.",
                     Condition = "Like New",
                     Category = "Watches",
-                    ImageUrl = "listing1.jpg",
+                    ImageUrl = "rolex.jpg",
                     SellerName = "LuxuryWatchSeller"
                 },
                 new Listing {
@@ -37,7 +38,7 @@ namespace Mauiapp1
                     Description = "2021 Tesla Model 3 with low mileage. Autopilot features included. Blue exterior with white interior.",
                     Condition = "Used - Excellent",
                     Category = "Cars",
-                    ImageUrl = "listing2.jpg",
+                    ImageUrl = "tesla.jpg",
                     SellerName = "EVLover"
                 },
                 new Listing {
@@ -47,7 +48,7 @@ namespace Mauiapp1
                     Description = "iPhone 13 Pro in Sierra Blue with 256GB storage. Includes original box and charger.",
                     Condition = "Used - Good",
                     Category = "Electronics",
-                    ImageUrl = "listing3.jpg",
+                    ImageUrl = "iphone.jpg",
                     SellerName = "GadgetGuru"
                 },
                 new Listing {
@@ -57,7 +58,7 @@ namespace Mauiapp1
                     Description = "55-inch Samsung QLED 4K Smart TV with remote. Perfect for gaming and streaming.",
                     Condition = "Like New",
                     Category = "Electronics",
-                    ImageUrl = "listing4.jpg",
+                    ImageUrl = "samsung.jpg",
                     SellerName = "ElectronicsShop"
                 },
                 new Listing {
@@ -67,7 +68,7 @@ namespace Mauiapp1
                     Description = "2018 Toyota Camry SE with 45,000 miles. Well maintained with full service history.",
                     Condition = "Used - Good",
                     Category = "Cars",
-                    ImageUrl = "listing5.jpg",
+                    ImageUrl = "toyota.jpg",
                     SellerName = "CarDealer"
                 },
                 new Listing {
@@ -77,7 +78,7 @@ namespace Mauiapp1
                     Description = "Seiko 5 automatic watch with stainless steel bracelet. Displays day and date.",
                     Condition = "Used - Excellent",
                     Category = "Watches",
-                    ImageUrl = "listing6.jpg",
+                    ImageUrl = "seiko.jpg",
                     SellerName = "WatchEnthusiast"
                 }
             };
@@ -97,7 +98,9 @@ namespace Mauiapp1
 
         private void OnSeeMoreClicked(object sender, EventArgs e)
         {
-            DisplayAlert("See More", "Showing more categories...", "OK");
+            _moreCategoriesVisible = !_moreCategoriesVisible;
+            SecondRowCategories.IsVisible = _moreCategoriesVisible;
+            SeeMoreButton.Text = _moreCategoriesVisible ? "See Less" : "See More";
         }
 
         private void OnAddItemClicked(object sender, EventArgs e)
@@ -123,11 +126,18 @@ namespace Mauiapp1
         // Add this method to ensure correct navigation
         private async void NavigateToDetailPage(Listing listing)
         {
-            // Create the detail page
-            var detailPage = new ListingDetailPage(listing);
+            try
+            {
+                // Create the detail page
+                var detailPage = new Views.ListingDetailPage(listing);
 
-            // Navigate to it
-            await Navigation.PushAsync(detailPage);
+                // Navigate to it
+                await Navigation.PushAsync(detailPage);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Navigation Error", $"Error navigating to details: {ex.Message}", "OK");
+            }
         }
 
         // Update these methods to use the common navigation method

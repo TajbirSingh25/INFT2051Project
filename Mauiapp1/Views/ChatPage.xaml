@@ -62,6 +62,24 @@
                 </StackLayout>
             </Grid>
 
+            <Grid Grid.Row="0" Padding="10" BackgroundColor="#f0f0f0">
+                <HorizontalStackLayout>
+                    <ImageButton 
+                    Source="left_arrow.png"
+                    HeightRequest="40"
+                    WidthRequest="40"
+                    Padding="5"
+                    BackgroundColor="Transparent"
+                    Clicked="BackButton_Clicked"/>
+                    <Label 
+                    Text="{Binding SellerName}" 
+                    VerticalOptions="Center"
+                    Margin="10,0,0,0"
+                    FontSize="18"
+                    FontAttributes="Bold"/>
+                </HorizontalStackLayout>
+            </Grid>
+
             <!-- Chat messages -->
             <CollectionView Grid.Row="1" 
                           x:Name="MessagesCollection"

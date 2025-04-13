@@ -1,35 +1,46 @@
 using Mauiapp1.Models;
+using Mauiapp1.Services;
 
 namespace Mauiapp1.Views
 {
     public partial class ListingDetailPage : ContentPage
     {
         private Listing _listing;
+        private readonly IDatabaseService _databaseService;
 
-        public ListingDetailPage(Listing listing)
+        // Updated constructor to accept database service
+        public ListingDetailPage(Listing listing, IDatabaseService databaseService = null)
         {
             InitializeComponent();
             _listing = listing;
+            _databaseService = databaseService;
             BindingContext = listing;
-
-            // Removed the toolbar button code since we now have a custom back button
         }
 
         // Override the hardware back button behavior (for Android)
         protected override bool OnBackButtonPressed()
         {
-            // Navigate back to the previous page
-            Navigation.PopAsync();
+            // Use the same logic as the custom back button
+            if (_databaseService != null)
+            {
+                Navigation.PushAsync(new MainPage(_databaseService));
+            }
+            else
+            {
+                Navigation.PopAsync();
+            }
 
             // Return true to indicate we've handled the back button
             return true;
         }
 
-        // New back button click handler, matching the ProfilePage implementation
+        // Updated to match your request
         private async void BackButton_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PopAsync();
-        }
+
+                await Navigation.PushAsync(new MainPage(_databaseService));
+            }
+     
 
         private async void OnContactSellerClicked(object sender, EventArgs e)
         {

@@ -278,6 +278,22 @@ namespace Mauiapp1.Views
             }
         }
 
+        private async void BackButton_Clicked(object sender, EventArgs e)
+        {
+            // Navigate back to the ListingDetailPage with the current listing item
+            await Navigation.PushAsync(new ListingDetailPage(_listingItem));
+        }
+
+        // Add back the OnBackButtonPressed method
+        protected override bool OnBackButtonPressed()
+        {
+            // Use the same logic as the custom back button
+            Navigation.PushAsync(new ListingDetailPage(_listingItem));
+
+            // Return true to indicate we've handled the back button
+            return true;
+        }
+
         private async Task ClearChatHistoryAsync()
         {
             bool confirm = await DisplayAlert("Clear Chat", "Are you sure you want to clear all chat history?", "Yes", "No");
