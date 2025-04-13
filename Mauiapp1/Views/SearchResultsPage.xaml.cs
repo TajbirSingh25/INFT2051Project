@@ -54,12 +54,16 @@ namespace Mauiapp1.Views
             // Mock data for testing
             return new List<Listing>
             {
-                new Listing { Id = 1, Title = "Rolex Submariner", Description = "Luxury dive watch in excellent condition", Category = "Watches", Price = 8500, ImageUrl = "watch1.jpg", SellerName = "LuxuryWatchSeller" },
-                new Listing { Id = 2, Title = "Seiko 5", Description = "Affordable automatic watch", Category = "Watches", Price = 120, ImageUrl = "watch2.jpg", SellerName = "WatchEnthusiast" },
-                new Listing { Id = 3, Title = "Tesla Model 3", Description = "Electric sedan, low mileage", Category = "Cars", Price = 35000, ImageUrl = "car1.jpg", SellerName = "EVLover" },
-                new Listing { Id = 4, Title = "Toyota Camry", Description = "Reliable sedan with good fuel economy", Category = "Cars", Price = 15000, ImageUrl = "car2.jpg", SellerName = "CarDealer" },
-                new Listing { Id = 5, Title = "iPhone 13", Description = "Slightly used, great condition", Category = "Electronics", Price = 650, ImageUrl = "phone1.jpg", SellerName = "GadgetGuru" },
-                new Listing { Id = 6, Title = "Samsung TV", Description = "55-inch QLED smart TV", Category = "Electronics", Price = 800, ImageUrl = "tv1.jpg", SellerName = "ElectronicsShop" }
+                new Listing { Id = 1, Title = "Rolex Submariner", Description = "Luxury dive watch in excellent condition", Category = "Watches", Price = 8500, ImageUrl = "rolex.jpg", SellerName = "LuxuryWatchSeller" },
+                new Listing { Id = 2, Title = "Seiko 5", Description = "Affordable automatic watch", Category = "Watches", Price = 120, ImageUrl = "seiko.jpg", SellerName = "WatchEnthusiast" },
+                new Listing { Id = 3, Title = "Tesla Model 3", Description = "Electric sedan, low mileage", Category = "Cars", Price = 35000, ImageUrl = "tesla.jpg", SellerName = "EVLover" },
+                new Listing { Id = 4, Title = "Toyota Camry", Description = "Reliable sedan with good fuel economy", Category = "Cars", Price = 15000, ImageUrl = "toyota.jpg", SellerName = "CarDealer" },
+                new Listing { Id = 5, Title = "iPhone 13", Description = "Slightly used, great condition", Category = "Electronics", Price = 650, ImageUrl = "iphone.jpg", SellerName = "GadgetGuru" },
+                new Listing { Id = 6, Title = "Samsung TV", Description = "55-inch QLED smart TV", Category = "Electronics", Price = 800, ImageUrl = "samsung.jpg", SellerName = "ElectronicsShop" },
+                new Listing { Id = 7, Title = "Classic Case Studies in Psychology", Price = 66, Description = "FClassic Case Studies in Psychology", Condition = "Good-reading", Category = "Books", ImageUrl = "classicbook.jpg", SellerName = "Book shop" },
+                new Listing { Id = 8, Title = "TENSSENX", Price = 129, Description = "Terrain Off Road Monster RC Truck, IPX5 Electric Vehicle Toys Gifts for Kids and Adults", Condition = "Kids - Excellent", Category = "Toys", ImageUrl = "toy.jpg", SellerName = "Toyshop" },
+                new Listing { Id = 9, Title = "Philips Air Purifier", Price = 91, Description = "With just one push of a button, the air purifier filters the invisible viruses,", Condition = "Used - Excellent", Category = "Home Appliances", ImageUrl = "purifier.jpg", SellerName = "Hardware Shop" },
+                new Listing { Id = 10, Title = "The Tiger Who Came to Tea", Price = 46, Description = "The classic picture book story of Sophie and her extraordinary teatime guest has been loved by millions of children since it was first published more than fifty years ago.", Condition = "Fun - Words", Category = "Books", ImageUrl = "tigerbook.jpg", SellerName = "Book Shop" },
             };
         }
 

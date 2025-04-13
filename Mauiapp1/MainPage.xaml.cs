@@ -80,7 +80,47 @@ namespace Mauiapp1
                     Category = "Watches",
                     ImageUrl = "seiko.jpg",
                     SellerName = "WatchEnthusiast"
-                }
+                },
+                new Listing {
+                    Id = 7,
+                    Title = "Classic Case Studies in Psychology",
+                    Price = 66,
+                    Description = "FClassic Case Studies in Psychology",
+                    Condition = "Good-reading",
+                    Category = "Books",
+                    ImageUrl = "classicbook.jpg",
+                    SellerName = "Book shop"
+                },
+                new Listing {
+                    Id = 8,
+                    Title = "TENSSENX",
+                    Price = 129,
+                    Description = "Terrain Off Road Monster RC Truck, IPX5 Electric Vehicle Toys Gifts for Kids and Adults",
+                    Condition = "Kids - Excellent",
+                    Category = "Toys",
+                    ImageUrl = "toy.jpg",
+                    SellerName = "Toyshop"
+                },
+                new Listing {
+                    Id = 9,
+                    Title = "Philips Air Purifier",
+                    Price = 91,
+                    Description = "With just one push of a button, the air purifier filters the invisible viruses,",
+                    Condition = "Used - Excellent",
+                    Category = "Home Appliances",
+                    ImageUrl = "purifier.jpg",
+                    SellerName = "Hardware Shop"
+                },
+                     new Listing {
+                    Id = 10,
+                    Title = "The Tiger Who Came to Tea",
+                    Price = 46,
+                    Description = "The classic picture book story of Sophie and her extraordinary teatime guest has been loved by millions of children since it was first published more than fifty years ago.",
+                    Condition = "Fun - Words",
+                    Category = "Books",
+                    ImageUrl = "tigerbook.jpg",
+                    SellerName = "Book Shop"
+                },
             };
 
             BindingContext = this;

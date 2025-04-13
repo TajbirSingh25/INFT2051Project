@@ -30,6 +30,7 @@
                     <!-- Category Buttons (First Row) -->
                     <Button Text="Watches"
                     BackgroundColor="LightBlue"
+                    TextColor="Black"        
                     CornerRadius="10"
                     WidthRequest="100"
                     HeightRequest="100"
@@ -37,6 +38,7 @@
 
                     <Button Text="Cars"
                     BackgroundColor="LightGreen"
+                    TextColor="Black"         
                     CornerRadius="10"
                     WidthRequest="100"
                     HeightRequest="100"
@@ -44,6 +46,7 @@
 
                     <Button Text="Electronics"
                     BackgroundColor="LightPink"
+                    TextColor="Black"         
                     CornerRadius="10"
                     WidthRequest="100"
                     HeightRequest="100"
@@ -60,7 +63,8 @@
                      IsVisible="false">
 
                     <Button Text="Toys"
-                    BackgroundColor="LightYellow"
+                    BackgroundColor="LightCoral"
+                    TextColor="Black" 
                     CornerRadius="10"
                     WidthRequest="100"
                     HeightRequest="100"
@@ -68,6 +72,7 @@
 
                     <Button Text="Books"
                     BackgroundColor="LightGray"
+                    TextColor="Black"         
                     CornerRadius="10"
                     WidthRequest="100"
                     HeightRequest="100"
@@ -75,6 +80,7 @@
 
                     <Button Text="Home Appliances"
                     BackgroundColor="LightGoldenrodYellow"
+                    TextColor="Black"         
                     CornerRadius="10"
                     WidthRequest="100"
                     HeightRequest="100"
