@@ -12,14 +12,7 @@ namespace Mauiapp1.Views
             _listing = listing;
             BindingContext = listing;
 
-            // Add a back button to the toolbar
-            ToolbarItems.Add(new ToolbarItem
-            {
-                Text = "Back",
-                IconImageSource = "back.png", // Use your back icon if available
-                Order = ToolbarItemOrder.Primary,
-                Command = new Command(async () => await Navigation.PopAsync())
-            });
+            // Removed the toolbar button code since we now have a custom back button
         }
 
         // Override the hardware back button behavior (for Android)
@@ -30,6 +23,12 @@ namespace Mauiapp1.Views
 
             // Return true to indicate we've handled the back button
             return true;
+        }
+
+        // New back button click handler, matching the ProfilePage implementation
+        private async void BackButton_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
         }
 
         private async void OnContactSellerClicked(object sender, EventArgs e)

@@ -46,14 +46,17 @@
                     CornerRadius="5"
                     Margin="0,0,0,15"/>
 
-            <Label Text="Forgot password?"
-                   HorizontalOptions="Center"
-                   TextColor="#007bff"
-                   FontSize="14">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}"/>
-                </Label.GestureRecognizers>
-            </Label>
+            <!-- Remember Me checkbox (replacing Forgot password section) -->
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <CheckBox x:Name="RememberMeCheckbox"
+                          IsChecked="{Binding RememberMe, Mode=TwoWay}"
+                          Color="#007bff"/>
+                <Label Text="Remember Me?"
+                       VerticalOptions="Center"
+                       TextColor="#007bff"
+                       FontSize="14"
+                       Margin="5,0,0,0"/>
+            </HorizontalStackLayout>
 
             <Label Text="Don't have an account? Register" 
                    HorizontalOptions="Center" 

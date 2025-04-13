@@ -23,11 +23,32 @@ namespace Mauiapp1.ViewModels
         [ObservableProperty]
         private bool _isErrorVisible;
 
+        [ObservableProperty]
+        private bool _rememberMe;
+
         public LoginViewModel(IAuthService authService, INavigationService navigationService)
         {
             Title = "Login";
             _authService = authService;
             _navigationService = navigationService;
+            LoadSavedUsername();
+        }
+
+        private async void LoadSavedUsername()
+        {
+            try
+            {
+                string savedUsername = await SecureStorage.Default.GetAsync("username");
+                if (!string.IsNullOrEmpty(savedUsername))
+                {
+                    Username = savedUsername;
+                    RememberMe = true;
+                }
+            }
+            catch (Exception)
+            {
+                // Handle any issues with SecureStorage
+            }
         }
 
         [RelayCommand]
@@ -52,6 +73,16 @@ namespace Mauiapp1.ViewModels
                 bool isAuthenticated = await _authService.LoginAsync(Username, Password);
                 if (isAuthenticated)
                 {
+                    // Save username if Remember Me is checked
+                    if (RememberMe)
+                    {
+                        await SecureStorage.Default.SetAsync("username", Username);
+                    }
+                    else
+                    {
+                        SecureStorage.Default.Remove("username");
+                    }
+
                     // Navigate to the main page on successful login
                     await _navigationService.NavigateToAsync("///MainPage");
                     // Clear the password
@@ -71,18 +102,6 @@ namespace Mauiapp1.ViewModels
         }
 
         [RelayCommand]
-        private async Task ForgotPassword()
-        {
-            await _navigationService.NavigateToAsync("ForgotPasswordPage");
-        }
-
-        [RelayCommand]
-
-        // In your LoginViewModel
-
-
-
-        
         private async Task Register()
         {
             try
@@ -102,4 +121,4 @@ namespace Mauiapp1.ViewModels
             }
         }
     }
-    }
+}

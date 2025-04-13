@@ -8,6 +8,7 @@ namespace Mauiapp1.Services
     {
         private SQLiteAsyncConnection _database;
         private static ChatDatabaseService _instance;
+        private TaskCompletionSource _initializationCompletionSource = new TaskCompletionSource();
 
         public static ChatDatabaseService Instance
         {
@@ -23,44 +24,71 @@ namespace Mauiapp1.Services
 
         private ChatDatabaseService()
         {
-            Initialize();
+            InitializeAsync();
         }
 
-        private async void Initialize()
+        private async void InitializeAsync()
         {
-            if (_database != null)
-                return;
+            try
+            {
+                if (_database != null)
+                {
+                    _initializationCompletionSource.TrySetResult();
+                    return;
+                }
 
-            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "chat_messages.db");
-            _database = new SQLiteAsyncConnection(dbPath);
-
-            await _database.CreateTableAsync<ChatMessage>();
+                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "chat_messages.db");
+                _database = new SQLiteAsyncConnection(dbPath);
+                await _database.CreateTableAsync<ChatMessage>();
+                _initializationCompletionSource.TrySetResult();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Database initialization error: {ex.Message}");
+                _initializationCompletionSource.TrySetException(ex);
+            }
         }
 
         public async Task<ObservableCollection<ChatMessage>> GetMessagesForListingAsync(int listingId, string userId)
         {
             await WaitForDatabaseInitialization();
 
-            var chatSessionId = $"{userId}_{listingId}";
-            var messages = await _database.Table<ChatMessage>()
-                .Where(m => m.ChatSessionId == chatSessionId)
-                .OrderBy(m => m.Timestamp)
-                .ToListAsync();
+            try
+            {
+                var chatSessionId = $"{userId}_{listingId}";
+                var messages = await _database.Table<ChatMessage>()
+                    .Where(m => m.ChatSessionId == chatSessionId)
+                    .OrderBy(m => m.Timestamp)
+                    .ToListAsync();
 
-            return new ObservableCollection<ChatMessage>(messages);
+                return new ObservableCollection<ChatMessage>(messages);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting messages: {ex.Message}");
+                return new ObservableCollection<ChatMessage>();
+            }
         }
 
         public async Task SaveMessageAsync(ChatMessage message)
         {
             await WaitForDatabaseInitialization();
 
-            if (message.Id == 0)
+            try
             {
-                await _database.InsertAsync(message);
+                if (message.Id == 0)
+                {
+                    await _database.InsertAsync(message);
+                }
+                else
+                {
+                    await _database.UpdateAsync(message);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await _database.UpdateAsync(message);
+                Console.WriteLine($"Error saving message: {ex.Message}");
+                throw;
             }
         }
 
@@ -68,37 +96,28 @@ namespace Mauiapp1.Services
         {
             await WaitForDatabaseInitialization();
 
-            var chatSessionId = $"{userId}_{listingId}";
-            // Fix the lambda expression issue by using Table and Where
-            var messagesToDelete = await _database.Table<ChatMessage>()
-                .Where(m => m.ChatSessionId == chatSessionId)
-                .ToListAsync();
-
-            foreach (var message in messagesToDelete)
+            try
             {
-                await _database.DeleteAsync(message);
+                var chatSessionId = $"{userId}_{listingId}";
+                var messagesToDelete = await _database.Table<ChatMessage>()
+                    .Where(m => m.ChatSessionId == chatSessionId)
+                    .ToListAsync();
+
+                foreach (var message in messagesToDelete)
+                {
+                    await _database.DeleteAsync(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error clearing chat history: {ex.Message}");
+                throw;
             }
         }
 
         private async Task WaitForDatabaseInitialization()
         {
-            if (_database == null)
-            {
-                Initialize();
-
-                // Give the database a moment to initialize
-                int attempts = 0;
-                while (_database == null && attempts < 5)
-                {
-                    await Task.Delay(100);
-                    attempts++;
-                }
-
-                if (_database == null)
-                {
-                    throw new Exception("Database failed to initialize");
-                }
-            }
+            await _initializationCompletionSource.Task;
         }
     }
 }

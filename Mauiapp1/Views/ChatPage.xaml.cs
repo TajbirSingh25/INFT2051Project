@@ -1,5 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Dispatching;
 using Mauiapp1.Models;
 using Mauiapp1.Services;
 
@@ -14,7 +16,8 @@ namespace Mauiapp1.Views
         private IntelligentChatbotService _chatbotService;
         private readonly ChatDatabaseService _databaseService = ChatDatabaseService.Instance;
 
-        public ObservableCollection<ChatMessage> Messages { get; private set; }
+        // Initialize Messages collection before binding context
+        public ObservableCollection<ChatMessage> Messages { get; private set; } = new ObservableCollection<ChatMessage>();
         public string SellerName { get; set; }
         public string SellerAvatarUrl { get; set; }
         public string ItemTitle { get; set; }
@@ -31,10 +34,7 @@ namespace Mauiapp1.Views
             // Initialize the chatbot service
             _chatbotService = new IntelligentChatbotService(listingItem);
 
-            // Initialize with empty collection in case loading fails
-            Messages = new ObservableCollection<ChatMessage>();
-
-            // Set binding context early to avoid null reference
+            // Set binding context after initializing all properties
             this.BindingContext = this;
 
             // Set up the chat
@@ -62,7 +62,14 @@ namespace Mauiapp1.Views
 
                 if (loadedMessages != null && loadedMessages.Count > 0)
                 {
-                    Messages = loadedMessages;
+                    // Clear existing messages first
+                    Messages.Clear();
+
+                    // Add each message individually to trigger notifications
+                    foreach (var msg in loadedMessages)
+                    {
+                        Messages.Add(msg);
+                    }
                 }
                 else
                 {
@@ -82,9 +89,6 @@ namespace Mauiapp1.Views
                     Messages.Add(welcomeMessage);
                     await _databaseService.SaveMessageAsync(welcomeMessage);
                 }
-
-                // Update binding context
-                this.BindingContext = this;
             }
             catch (Exception ex)
             {
@@ -111,15 +115,24 @@ namespace Mauiapp1.Views
                 // Hide loading indicator
                 LoadingIndicator.IsVisible = false;
                 ChatContainer.IsVisible = true;
-
-                // Scroll to the bottom when the page appears
-                this.Appearing += (sender, e) => {
-                    if (Messages.Count > 0)
-                    {
-                        MessagesCollection.ScrollTo(Messages.Count - 1, animate: false);
-                    }
-                };
             }
+
+            // Scroll to the bottom when the page appears
+            this.Appearing += (sender, e) => {
+                if (Messages.Count > 0)
+                {
+                    MainThread.BeginInvokeOnMainThread(() => {
+                        try
+                        {
+                            MessagesCollection.ScrollTo(Messages.Count - 1, animate: false);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to scroll: {ex.Message}");
+                        }
+                    });
+                }
+            };
         }
 
         private void OnMessageTextChanged(object sender, TextChangedEventArgs e)
@@ -150,17 +163,28 @@ namespace Mauiapp1.Views
                     ChatSessionId = $"{_currentUserId}_{_listingItem.Id}"
                 };
 
-                Messages.Add(userMessage);
+                // Add to collection on UI thread
+                MainThread.BeginInvokeOnMainThread(() => {
+                    Messages.Add(userMessage);
+                });
 
-                // Save the user message to database
+                // Save to database
                 await _databaseService.SaveMessageAsync(userMessage);
 
                 // Clear the input field
                 MessageEntry.Text = string.Empty;
 
-                // Scroll to the bottom to show the latest message
-                await Task.Delay(100);
-                MessagesCollection.ScrollTo(Messages.Count - 1);
+                // Scroll to the latest message on UI thread
+                MainThread.BeginInvokeOnMainThread(() => {
+                    try
+                    {
+                        MessagesCollection.ScrollTo(Messages.Count - 1);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to scroll: {ex.Message}");
+                    }
+                });
 
                 // Simulate the seller typing and responding
                 await SimulateSellerResponseAsync(messageText);
@@ -191,15 +215,26 @@ namespace Mauiapp1.Views
                     AvatarUrl = SellerAvatarUrl
                 };
 
-                Messages.Add(typingMessage);
-                await Task.Delay(100);
-                MessagesCollection.ScrollTo(Messages.Count - 1);
+                // Add typing indicator on UI thread
+                MainThread.BeginInvokeOnMainThread(() => {
+                    Messages.Add(typingMessage);
+                    try
+                    {
+                        MessagesCollection.ScrollTo(Messages.Count - 1);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to scroll: {ex.Message}");
+                    }
+                });
 
                 // Wait a random time (1-3 seconds) to simulate typing
                 await Task.Delay(_random.Next(1000, 3000));
 
-                // Remove the typing indicator
-                Messages.Remove(typingMessage);
+                // Remove the typing indicator on UI thread
+                MainThread.BeginInvokeOnMainThread(() => {
+                    Messages.Remove(typingMessage);
+                });
 
                 // Get an intelligent response
                 string response = _chatbotService.GetResponse(userMessage);
@@ -217,14 +252,21 @@ namespace Mauiapp1.Views
                     ChatSessionId = $"{_currentUserId}_{_listingItem.Id}"
                 };
 
-                Messages.Add(sellerMessage);
+                // Add to collection on UI thread
+                MainThread.BeginInvokeOnMainThread(() => {
+                    Messages.Add(sellerMessage);
+                    try
+                    {
+                        MessagesCollection.ScrollTo(Messages.Count - 1);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to scroll: {ex.Message}");
+                    }
+                });
 
                 // Save the response to database
                 await _databaseService.SaveMessageAsync(sellerMessage);
-
-                // Scroll to show the latest message
-                await Task.Delay(100);
-                MessagesCollection.ScrollTo(Messages.Count - 1);
             }
             catch (Exception ex)
             {
@@ -247,8 +289,10 @@ namespace Mauiapp1.Views
                     // Clear from database
                     await _databaseService.ClearChatHistoryAsync(_listingItem.Id, _currentUserId);
 
-                    // Clear from collection
-                    Messages.Clear();
+                    // Clear from collection on UI thread
+                    MainThread.BeginInvokeOnMainThread(() => {
+                        Messages.Clear();
+                    });
 
                     // Add welcome message back
                     var welcomeMessage = new ChatMessage
@@ -263,7 +307,12 @@ namespace Mauiapp1.Views
                         ChatSessionId = $"{_currentUserId}_{_listingItem.Id}"
                     };
 
-                    Messages.Add(welcomeMessage);
+                    // Add to collection on UI thread
+                    MainThread.BeginInvokeOnMainThread(() => {
+                        Messages.Add(welcomeMessage);
+                    });
+
+                    // Save to database
                     await _databaseService.SaveMessageAsync(welcomeMessage);
                 }
                 catch (Exception ex)

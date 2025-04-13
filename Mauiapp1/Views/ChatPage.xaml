@@ -2,8 +2,21 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Mauiapp1.Models"
+             xmlns:converters="clr-namespace:Mauiapp1.Converters"
              x:Class="Mauiapp1.Views.ChatPage"
              Title="Chat">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToLastColumnConverter x:Key="BoolToLastColumnConverter"/>
+            <converters:BoolToFirstColumnConverter x:Key="BoolToFirstColumnConverter"/>
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+            <converters:MessageBubbleColorConverter x:Key="MessageBubbleColorConverter"/>
+            <converters:MessageTextColorConverter x:Key="MessageTextColorConverter"/>
+            <converters:TimestampColorConverter x:Key="TimestampColorConverter"/>
+            <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto">
 
@@ -51,14 +64,18 @@
 
             <!-- Chat messages -->
             <CollectionView Grid.Row="1" 
-                        x:Name="MessagesCollection"
-                        ItemsSource="{Binding Messages}"
-                        Margin="10"
-                        VerticalOptions="Fill">
+                          x:Name="MessagesCollection"
+                          ItemsSource="{Binding Messages}"
+                          Margin="10"
+                          VerticalOptions="Fill">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:ChatMessage">
-                        <Grid Padding="5,3" 
-                              ColumnDefinitions="Auto,*,Auto">
+                        <Grid Padding="5,3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
                             <!-- User Avatar (for messages from other users) -->
                             <Image Grid.Column="{Binding IsFromCurrentUser, Converter={StaticResource BoolToLastColumnConverter}}"
@@ -75,24 +92,28 @@
                                 </Image.Clip>
                             </Image>
 
-                            <!-- Message bubble -->
-                            <Frame Grid.Column="1"
-                                   HasShadow="False"
-                                   Padding="10"
-                                   Margin="5,2"
-                                   CornerRadius="15"
-                                   BackgroundColor="{Binding IsFromCurrentUser, Converter={StaticResource MessageBubbleColorConverter}}"
-                                   HorizontalOptions="{Binding IsFromCurrentUser, Converter={StaticResource MessageAlignmentConverter}}">
-                                <StackLayout Spacing="2">
-                                    <Label Text="{Binding Message}"
-                                           TextColor="{Binding IsFromCurrentUser, Converter={StaticResource MessageTextColorConverter}}"
-                                           LineBreakMode="WordWrap"/>
-                                    <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}"
-                                           FontSize="10"
-                                           TextColor="{Binding IsFromCurrentUser, Converter={StaticResource TimestampColorConverter}}"
-                                           HorizontalOptions="End"/>
-                                </StackLayout>
-                            </Frame>
+                            <!-- Message bubble with auto width -->
+                            <Grid Grid.Column="1"
+                                  HorizontalOptions="{Binding IsFromCurrentUser, Converter={StaticResource MessageAlignmentConverter}}">
+                                <!-- Message bubble frame with auto width -->
+                                <Frame HasShadow="False"
+                                       Padding="10"
+                                       Margin="2"
+                                       CornerRadius="15"
+                                       BackgroundColor="{Binding IsFromCurrentUser, Converter={StaticResource MessageBubbleColorConverter}}"
+                                       HorizontalOptions="Start"
+                                       MaximumWidthRequest="280">
+                                    <StackLayout Spacing="2">
+                                        <Label Text="{Binding Message}"
+                                               TextColor="{Binding IsFromCurrentUser, Converter={StaticResource MessageTextColorConverter}}"
+                                               LineBreakMode="WordWrap"/>
+                                        <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}"
+                                               FontSize="10"
+                                               TextColor="{Binding IsFromCurrentUser, Converter={StaticResource TimestampColorConverter}}"
+                                               HorizontalOptions="End"/>
+                                    </StackLayout>
+                                </Frame>
+                            </Grid>
 
                             <!-- My Avatar (for messages from current user) -->
                             <Image Grid.Column="{Binding IsFromCurrentUser, Converter={StaticResource BoolToFirstColumnConverter}}"

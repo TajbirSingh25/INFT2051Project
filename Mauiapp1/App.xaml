@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Mauiapp1"
+             xmlns:converters="clr-namespace:Mauiapp1.Converters"
              x:Class="Mauiapp1.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,24 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Use the existing converters from ChatUIConverter.cs -->
+            <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
+            <converters:MessageBubbleColorConverter x:Key="MessageBubbleColorConverter" />
+            <converters:MessageTextColorConverter x:Key="MessageTextColorConverter" />
+            <converters:TimestampColorConverter x:Key="TimestampColorConverter" />
+            <converters:BoolToFirstColumnConverter x:Key="BoolToFirstColumnConverter" />
+            <converters:BoolToLastColumnConverter x:Key="BoolToLastColumnConverter" />
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
+            <!-- Style for category buttons -->
+            <Style x:Key="CategoryButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#F0F0F0" />
+                <Setter Property="TextColor" Value="#333333" />
+                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="Padding" Value="15,8" />
+                <Setter Property="MinimumWidthRequest" Value="100" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

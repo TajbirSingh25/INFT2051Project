@@ -107,5 +107,9 @@ namespace Mauiapp1.Services
             await InitializeAsync();
             return await _database.DeleteAsync(product);
         }
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _database.Table<User>().ToListAsync();
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace Mauiapp1
         private FileResult _selectedProfileImageFile;
         private User _currentUser;
 
-        private string _profileImagePath; 
+        private string _profileImagePath;
 
         public ProfilePage(IDatabaseService databaseService)
         {
@@ -105,11 +105,27 @@ namespace Mauiapp1
 
                 if (string.IsNullOrEmpty(currentUsername))
                 {
-                    // For testing if there's no stored user
-                    currentUsername = "AMsudhan"; // Default test user
+                    // If there's no stored username in SecureStorage, try to get the most recently registered user
+                    var users = await _databaseService.GetAllUsersAsync(); // You'll need to add this method to your IDatabaseService
+                    if (users != null && users.Count > 0)
+                    {
+                        // Get the most recently registered user (assuming you have a registration date field)
+                        // If not, just get the first user in the list
+                        _currentUser = users.FirstOrDefault();
+                        currentUsername = _currentUser?.Username;
+                    }
+                    else
+                    {
+                        // Only use a fallback if absolutely necessary
+                        currentUsername = "Guest";
+                    }
                 }
 
-                _currentUser = await _databaseService.GetUserAsync(currentUsername);
+                if (_currentUser == null && !string.IsNullOrEmpty(currentUsername))
+                {
+                    _currentUser = await _databaseService.GetUserAsync(currentUsername);
+                }
+
                 if (_currentUser != null)
                 {
                     // Update the username label with the actual username from registration
