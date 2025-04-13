@@ -27,7 +27,6 @@ namespace Mauiapp1
             _userProducts = new ObservableCollection<ProductViewModel>();
             ItemsCollectionView.ItemsSource = _userProducts;
 
-            // Load user data and products when page appears
             this.Appearing += async (s, e) => await LoadDataAsync();
         }
 
@@ -35,11 +34,9 @@ namespace Mauiapp1
         {
             if (sender is Button button && button.CommandParameter is int productId)
             {
-                // Get the product to edit
                 var product = await _databaseService.GetProductByIdAsync(productId);
                 if (product != null)
                 {
-                    // Navigate to ListItemPage in edit mode with the product
                     await Navigation.PushAsync(new ListItemPage(_databaseService, product));
                 }
                 else
@@ -53,7 +50,6 @@ namespace Mauiapp1
         {
             if (sender is Button button && button.CommandParameter is int productId)
             {
-                // Ask for confirmation before deleting
                 bool confirm = await DisplayAlert("Confirm Delete",
                     "Are you sure you want to delete this product?",
                     "Delete", "Cancel");
@@ -62,7 +58,6 @@ namespace Mauiapp1
                 {
                     try
                     {
-                        // Get the product first
                         var productToDelete = await _databaseService.GetProductByIdAsync(productId);
 
                         if (productToDelete != null)
@@ -94,29 +89,22 @@ namespace Mauiapp1
                 }
             }
         }
-
-        // Make sure LoadDataAsync gets the actual username from registration
         private async Task LoadDataAsync()
         {
             try
             {
-                // Load the current user
                 string currentUsername = await SecureStorage.GetAsync("current_user");
 
                 if (string.IsNullOrEmpty(currentUsername))
                 {
-                    // If there's no stored username in SecureStorage, try to get the most recently registered user
-                    var users = await _databaseService.GetAllUsersAsync(); // You'll need to add this method to your IDatabaseService
+                    var users = await _databaseService.GetAllUsersAsync(); 
                     if (users != null && users.Count > 0)
                     {
-                        // Get the most recently registered user (assuming you have a registration date field)
-                        // If not, just get the first user in the list
                         _currentUser = users.FirstOrDefault();
                         currentUsername = _currentUser?.Username;
                     }
                     else
                     {
-                        // Only use a fallback if absolutely necessary
                         currentUsername = "Guest";
                     }
                 }
@@ -128,18 +116,11 @@ namespace Mauiapp1
 
                 if (_currentUser != null)
                 {
-                    // Update the username label with the actual username from registration
                     UsernameLabel.Text = _currentUser.Username;
-
-                    // Update full name if available
                     string fullName = GetFullName(_currentUser);
                     FullNameLabel.Text = !string.IsNullOrWhiteSpace(fullName) ? fullName : "Member";
-
-                    // Load profile image if available
                     LoadProfileImage(currentUsername);
                 }
-
-                // Load user's products
                 await LoadUserProductsAsync();
             }
             catch (Exception ex)
@@ -172,25 +153,18 @@ namespace Mauiapp1
         {
             try
             {
-                // Since we can't store the profile image path in the User model,
-                // we'll use a naming convention to find the profile image
                 string profileImagesDir = Path.Combine(FileSystem.AppDataDirectory, "ProfileImages");
-
-                // Check if directory exists
                 if (Directory.Exists(profileImagesDir))
                 {
-                    // Try to find profile image with standard naming pattern
                     var files = Directory.GetFiles(profileImagesDir, $"profile_{username}*");
                     if (files.Length > 0)
                     {
-                        // Use the most recently created file
                         var mostRecentFile = files.OrderByDescending(f => new FileInfo(f).CreationTime).First();
                         ProfileImage.Source = ImageSource.FromFile(mostRecentFile);
                         _profileImagePath = mostRecentFile;
                     }
                     else
                     {
-                        // Try to load from preferences as fallback
                         string savedPath = Preferences.Get($"profile_image_{username}", null);
                         if (!string.IsNullOrEmpty(savedPath) && File.Exists(savedPath))
                         {
@@ -203,7 +177,7 @@ namespace Mauiapp1
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading profile image: {ex.Message}");
-                // Keep default image
+               
             }
         }
 
@@ -211,16 +185,10 @@ namespace Mauiapp1
         {
             try
             {
-                // Clear existing products
                 _userProducts.Clear();
 
                 // Get all products
                 var products = await _databaseService.GetAllProductsAsync();
-
-                // Filter products by user (if you have a way to associate products with users)
-                // For now, assuming all products belong to the current user
-
-                // Convert to view models and add to collection
                 if (products != null && products.Count > 0)
                 {
                     foreach (var product in products)
@@ -237,7 +205,6 @@ namespace Mauiapp1
                         });
                     }
                 }
-                // The CollectionView will automatically show the EmptyView if _userProducts is empty
             }
             catch (Exception ex)
             {
@@ -250,7 +217,7 @@ namespace Mauiapp1
         {
             if (string.IsNullOrEmpty(imagePath) || !File.Exists(imagePath))
             {
-                return "placeholder_product.png"; // Default placeholder image
+                return "placeholder_product.png";
             }
 
             return ImageSource.FromFile(imagePath);
@@ -292,7 +259,6 @@ namespace Mauiapp1
                     return;
                 }
 
-                // Request camera permission
 #if ANDROID
                 var status = await Permissions.RequestAsync<Permissions.Camera>();
                 if (status != PermissionStatus.Granted)
@@ -336,7 +302,6 @@ namespace Mauiapp1
             {
                 _selectedProfileImageFile = photo;
 
-                // Display the selected image
                 var stream = await photo.OpenReadAsync();
                 ProfileImage.Source = ImageSource.FromStream(() => stream);
 
@@ -346,8 +311,6 @@ namespace Mauiapp1
                 if (!string.IsNullOrEmpty(imagePath))
                 {
                     _profileImagePath = imagePath;
-
-                    // Store the path in preferences since we can't update User model
                     if (_currentUser != null)
                     {
                         Preferences.Set($"profile_image_{_currentUser.Username}", imagePath);
@@ -367,7 +330,6 @@ namespace Mauiapp1
 
             try
             {
-                // Create unique filename with username for easy lookup later
                 string username = _currentUser?.Username ?? "unknown";
                 var fileName = $"profile_{username}_{Guid.NewGuid()}{Path.GetExtension(photo.FileName)}";
 
@@ -378,10 +340,8 @@ namespace Mauiapp1
                     fileName
                 );
 
-                // Ensure directory exists
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
 
-                // Copy file
                 using var sourceStream = await photo.OpenReadAsync();
                 using var destinationStream = File.Create(destinationPath);
                 await sourceStream.CopyToAsync(destinationStream);
@@ -399,15 +359,10 @@ namespace Mauiapp1
         {
             if (e.CurrentSelection.FirstOrDefault() is ProductViewModel selectedProduct)
             {
-                // Reset selection
                 ((CollectionView)sender).SelectedItem = null;
 
-                // Navigate to product details page or show details in a popup
-                // This is where you would implement product details view
                 await DisplayAlert("Product Selected", $"You selected: {selectedProduct.Name}", "OK");
 
-                // For a full implementation, you might navigate to a details page
-                // await Navigation.PushAsync(new ProductDetailsPage(selectedProduct.Id, _databaseService));
             }
         }
     }

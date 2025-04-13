@@ -15,7 +15,6 @@ namespace Mauiapp1.Views
         public bool HasSearchResults => SearchResults?.Count > 0;
         private bool _isFromSearch = false;
 
-        // Updated constructor for when coming from MainPage
         public ListingDetailPage(Listing listing, IDatabaseService databaseService = null)
         {
             InitializeComponent();
@@ -26,17 +25,15 @@ namespace Mauiapp1.Views
             MainListings = new ObservableCollection<Listing>();
             SearchResults = new ObservableCollection<Listing>();
 
-            // Load MainPage listings if database service is available
             if (_databaseService != null)
             {
                 LoadMainListings();
             }
 
-            // Set up the binding context with both the current listing and the collections
+
             SetupBindingContext();
         }
 
-        // Constructor for when coming from SearchResultsPage
         public ListingDetailPage(Listing listing, ObservableCollection<Listing> searchResults, IDatabaseService databaseService = null)
         {
             InitializeComponent();
@@ -48,22 +45,18 @@ namespace Mauiapp1.Views
             MainListings = new ObservableCollection<Listing>();
             SearchResults = new ObservableCollection<Listing>(searchResults.Where(l => l.Id != listing.Id));
 
-            // Load MainPage listings if database service is available
             if (_databaseService != null)
             {
                 LoadMainListings();
             }
 
-            // Set up the binding context with both the current listing and the collections
             SetupBindingContext();
         }
 
         private void SetupBindingContext()
         {
-            // Create a dynamic object to hold all binding properties
             var bindingContext = new
             {
-                // Properties from the selected listing
                 _listing.Id,
                 _listing.Title,
                 _listing.Price,
@@ -72,27 +65,20 @@ namespace Mauiapp1.Views
                 _listing.Category,
                 _listing.ImageUrl,
                 _listing.SellerName,
-
-                // The collections
                 MainListings = this.MainListings,
                 SearchResults = this.SearchResults,
                 HasSearchResults = this.HasSearchResults
             };
 
-            // Set the binding context
             BindingContext = bindingContext;
         }
 
         private void LoadMainListings()
         {
-            // In a real app, you would get this from the database
-            // For now, we'll use mock data similar to what's in MainPage
             var allListings = GetMockListings();
 
-            // Don't include the current listing in the main listings
             var filteredListings = allListings.Where(l => l.Id != _listing.Id).ToList();
 
-            // Take up to 5 listings to show
             foreach (var item in filteredListings.Take(5))
             {
                 MainListings.Add(item);
@@ -117,10 +103,8 @@ namespace Mauiapp1.Views
             };
         }
 
-        // Override the hardware back button behavior (for Android)
         protected override bool OnBackButtonPressed()
         {
-            // Use the same logic as the custom back button
             if (_databaseService != null)
             {
                 Navigation.PushAsync(new MainPage(_databaseService));
@@ -130,11 +114,10 @@ namespace Mauiapp1.Views
                 Navigation.PopAsync();
             }
 
-            // Return true to indicate we've handled the back button
             return true;
         }
 
-        // Updated to match your request
+
         private async void BackButton_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new MainPage(_databaseService));
@@ -142,7 +125,7 @@ namespace Mauiapp1.Views
 
         private async void OnContactSellerClicked(object sender, EventArgs e)
         {
-            // Navigate to the chat page with the current listing
+
             await Navigation.PushAsync(new ChatPage(_listing));
         }
 
@@ -161,7 +144,7 @@ namespace Mauiapp1.Views
                     await DisplayAlert("Offer Submitted",
                         $"Your offer of ${offerAmount} has been sent to {_listing.SellerName}",
                         "OK");
-                    // In a real app, you would save this offer in a database
+
                 }
                 else
                 {
@@ -170,15 +153,15 @@ namespace Mauiapp1.Views
             }
         }
 
-        // Event handlers for the main listings collection
+
         private void OnMainListingSelected(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.FirstOrDefault() is Listing selectedListing)
             {
-                // Reset selection
+
                 MainListingsCollection.SelectedItem = null;
 
-                // Navigate to the selected listing
+   
                 NavigateToNewListing(selectedListing);
             }
         }
@@ -191,15 +174,15 @@ namespace Mauiapp1.Views
             }
         }
 
-        // Event handlers for the search results collection
+
         private void OnSearchResultSelected(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.FirstOrDefault() is Listing selectedListing)
             {
-                // Reset selection
+
                 SearchResultsCollection.SelectedItem = null;
 
-                // Navigate to the selected listing
+             
                 NavigateToNewListing(selectedListing);
             }
         }
@@ -212,12 +195,11 @@ namespace Mauiapp1.Views
             }
         }
 
-        // Common method to navigate to a new listing
+  
         private async void NavigateToNewListing(Listing listing)
         {
             try
             {
-                // If the navigation came from a search, include search results
                 if (_isFromSearch)
                 {
                     var detailPage = new ListingDetailPage(listing, SearchResults, _databaseService);

@@ -131,8 +131,6 @@ namespace Mauiapp1
         {
             var button = sender as Button;
             string category = button.Text;
-
-            // Navigate to search results with the category as the query
             await Navigation.PushAsync(new SearchResultsPage(_databaseService, category));
         }
 
@@ -145,7 +143,6 @@ namespace Mauiapp1
 
         private void OnAddItemClicked(object sender, EventArgs e)
         {
-            // Add your code here to handle the add item action
         }
 
         private async void OnProfileClicked(object sender, EventArgs e)
@@ -163,12 +160,10 @@ namespace Mauiapp1
             }
         }
 
-        // Add this method to ensure correct navigation
         private async void NavigateToDetailPage(Listing listing)
         {
             try
             {
-                // Create the detail page and pass the listings collection
                 var detailPage = new Views.ListingDetailPage(listing, _databaseService);
 
                 // Navigate to it
@@ -179,16 +174,11 @@ namespace Mauiapp1
                 await DisplayAlert("Navigation Error", $"Error navigating to details: {ex.Message}", "OK");
             }
         }
-
-        // Update these methods to use the common navigation method
         private async void OnListingSelected(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.FirstOrDefault() is Listing selectedListing)
             {
-                // Reset selection
                 ((CollectionView)sender).SelectedItem = null;
-
-                // Navigate to listing detail page
                 NavigateToDetailPage(selectedListing);
             }
         }
@@ -197,7 +187,6 @@ namespace Mauiapp1
         {
             if (e.Parameter is Listing tappedListing)
             {
-                // Navigate to listing detail page
                 NavigateToDetailPage(tappedListing);
             }
         }

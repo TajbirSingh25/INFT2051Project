@@ -21,7 +21,7 @@ namespace UploadImageApp.Services
         {
             try
             {
-                // Configure FilePicker with more comprehensive options
+
                 var customFileType = new FilePickerFileType(
                     new Dictionary<DevicePlatform, IEnumerable<string>>
                     {
@@ -37,13 +37,13 @@ namespace UploadImageApp.Services
                     FileTypes = customFileType,
                 };
 
-                // This is critical for Windows - ensure permissions are set correctly
+   
 #if WINDOWS
                 await Permissions.RequestAsync<Permissions.StorageRead>();
                 await Permissions.RequestAsync<Permissions.StorageWrite>();
 #endif
 
-                // Use FilePicker with proper options
+       
                 var result = await FilePicker.Default.PickAsync(options);
 
                 if (result != null)

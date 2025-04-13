@@ -10,13 +10,11 @@ namespace Mauiapp1.Views
     public partial class ChatPage : ContentPage
     {
         private readonly Mauiapp1.Models.Listing _listingItem;
-        private readonly string _currentUserId = "currentUser"; // In a real app, this would come from authentication
+        private readonly string _currentUserId = "currentUser"; 
         private Random _random = new Random();
         private bool _isTypingResponseSimulated = false;
         private IntelligentChatbotService _chatbotService;
         private readonly ChatDatabaseService _databaseService = ChatDatabaseService.Instance;
-
-        // Initialize Messages collection before binding context
         public ObservableCollection<ChatMessage> Messages { get; private set; } = new ObservableCollection<ChatMessage>();
         public string SellerName { get; set; }
         public string SellerAvatarUrl { get; set; }
@@ -29,18 +27,17 @@ namespace Mauiapp1.Views
             _listingItem = listingItem;
             SellerName = listingItem.SellerName ?? "Seller";
             ItemTitle = listingItem.Title ?? "Item";
-            SellerAvatarUrl = "profile_placeholder.png"; // Replace with actual seller avatar if available
+            SellerAvatarUrl = "profile_placeholder.png"; 
 
-            // Initialize the chatbot service
+  
             _chatbotService = new IntelligentChatbotService(listingItem);
 
-            // Set binding context after initializing all properties
             this.BindingContext = this;
 
-            // Set up the chat
+    
             InitializeChatAsync();
 
-            // Add Clear Chat option to toolbar
+
             ToolbarItems.Add(new ToolbarItem
             {
                 Text = "Clear Chat",
@@ -51,21 +48,16 @@ namespace Mauiapp1.Views
 
         private async void InitializeChatAsync()
         {
-            // Show loading indicator
             LoadingIndicator.IsVisible = true;
             ChatContainer.IsVisible = false;
 
             try
             {
-                // Load existing messages
                 var loadedMessages = await _databaseService.GetMessagesForListingAsync(_listingItem.Id, _currentUserId);
 
                 if (loadedMessages != null && loadedMessages.Count > 0)
                 {
-                    // Clear existing messages first
                     Messages.Clear();
-
-                    // Add each message individually to trigger notifications
                     foreach (var msg in loadedMessages)
                     {
                         Messages.Add(msg);
@@ -73,7 +65,6 @@ namespace Mauiapp1.Views
                 }
                 else
                 {
-                    // If no messages found, add a welcome message
                     var welcomeMessage = new ChatMessage
                     {
                         SenderId = "seller",
@@ -94,7 +85,6 @@ namespace Mauiapp1.Views
             {
                 await DisplayAlert("Error", $"There was a problem loading the chat: {ex.Message}", "OK");
 
-                // If loading fails, ensure we have a welcome message
                 if (Messages.Count == 0)
                 {
                     var welcomeMessage = new ChatMessage
@@ -112,12 +102,9 @@ namespace Mauiapp1.Views
             }
             finally
             {
-                // Hide loading indicator
                 LoadingIndicator.IsVisible = false;
                 ChatContainer.IsVisible = true;
             }
-
-            // Scroll to the bottom when the page appears
             this.Appearing += (sender, e) => {
                 if (Messages.Count > 0)
                 {
@@ -137,7 +124,7 @@ namespace Mauiapp1.Views
 
         private void OnMessageTextChanged(object sender, TextChangedEventArgs e)
         {
-            // Enable/disable the send button based on whether there's text
+        
             SendButton.IsEnabled = !string.IsNullOrWhiteSpace(e.NewTextValue);
         }
 
@@ -163,7 +150,6 @@ namespace Mauiapp1.Views
                     ChatSessionId = $"{_currentUserId}_{_listingItem.Id}"
                 };
 
-                // Add to collection on UI thread
                 MainThread.BeginInvokeOnMainThread(() => {
                     Messages.Add(userMessage);
                 });
@@ -231,7 +217,6 @@ namespace Mauiapp1.Views
                 // Wait a random time (1-3 seconds) to simulate typing
                 await Task.Delay(_random.Next(1000, 3000));
 
-                // Remove the typing indicator on UI thread
                 MainThread.BeginInvokeOnMainThread(() => {
                     Messages.Remove(typingMessage);
                 });
@@ -239,7 +224,6 @@ namespace Mauiapp1.Views
                 // Get an intelligent response
                 string response = _chatbotService.GetResponse(userMessage);
 
-                // Add the seller's response
                 var sellerMessage = new ChatMessage
                 {
                     SenderId = "seller",
@@ -280,17 +264,17 @@ namespace Mauiapp1.Views
 
         private async void BackButton_Clicked(object sender, EventArgs e)
         {
-            // Navigate back to the ListingDetailPage with the current listing item
+         
             await Navigation.PushAsync(new ListingDetailPage(_listingItem));
         }
 
-        // Add back the OnBackButtonPressed method
+
         protected override bool OnBackButtonPressed()
         {
-            // Use the same logic as the custom back button
+       
             Navigation.PushAsync(new ListingDetailPage(_listingItem));
 
-            // Return true to indicate we've handled the back button
+     
             return true;
         }
 

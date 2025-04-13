@@ -23,11 +23,8 @@ public partial class ListItemPage : ContentPage
         InitializeComponent();
         _databaseService = databaseService;
         uploadImage = new UploadImage(this);
-
-        // Initialize Products table
         InitializeProductsTable();
 
-        // Check if we're in edit mode
         if (productToEdit != null)
         {
             _isEditMode = true;
@@ -74,14 +71,11 @@ public partial class ListItemPage : ContentPage
     {
         try
         {
-            // Check if camera is available (new way)
             if (DeviceInfo.Platform == DevicePlatform.Unknown || !MediaPicker.Default.IsCaptureSupported)
             {
                 await DisplayAlert("Error", "Camera not available on this device", "OK");
                 return;
             }
-
-            // Request camera permission
 #if ANDROID
             var status = await Permissions.RequestAsync<Permissions.Camera>();
             if (status != PermissionStatus.Granted)
@@ -110,7 +104,6 @@ public partial class ListItemPage : ContentPage
         try
         {
             Console.WriteLine("Starting photo picker...");
-            // Use the updated OpenMediaPickerAsync method that now uses FilePicker
             var img = await uploadImage.OpenMediaPickerAsync();
 
             if (img != null)
@@ -121,15 +114,10 @@ public partial class ListItemPage : ContentPage
                 if (imagefile != null)
                 {
                     Console.WriteLine("Image processed successfully, updating UI");
-
-                    // Create a memory stream from the base64 string
                     var imageBytes = uploadImage.StringToByteBase64(imagefile.byteBase64);
                     Console.WriteLine($"Image byte array length: {imageBytes.Length}");
 
-                    // Store the base64 string for later use
                     _imageBase64 = imagefile.byteBase64;
-
-                    // Set the image source
                     SelectedImage.Source = ImageSource.FromStream(() =>
                         uploadImage.ByteArrayToStream(imageBytes)
                     );
@@ -195,8 +183,6 @@ public partial class ListItemPage : ContentPage
         // Fill in the form fields
         ProductNameEntry.Text = product.Name;
         ProductDescriptionEditor.Text = product.Description;
-
-        // Set product type
         int typeIndex = -1;
         for (int i = 0; i < ProductTypePicker.Items.Count; i++)
         {
@@ -212,16 +198,12 @@ public partial class ListItemPage : ContentPage
         }
 
         PriceEntry.Text = product.Price.ToString();
-
-        // Load the product image if it exists
         if (!string.IsNullOrEmpty(product.ImagePath) && File.Exists(product.ImagePath))
         {
             SelectedImage.Source = ImageSource.FromFile(product.ImagePath);
             AddImageButton.IsVisible = false;
             ImageActionButtons.IsVisible = true;
         }
-
-        // Change submit button text
         SubmitButton.Text = "Save Changes";
     }
 
@@ -271,25 +253,20 @@ public partial class ListItemPage : ContentPage
                 if (!proceed) return;
             }
 
-            // Create or update product object
             Product product;
 
             if (_isEditMode)
             {
-                // Update existing product
                 product = _productToEdit;
                 product.Name = ProductNameEntry.Text;
                 product.Description = ProductDescriptionEditor.Text ?? "";
                 product.Type = ProductTypePicker.SelectedItem?.ToString() ?? "";
                 product.Price = price;
-
-                // Only update the image if a new one was selected
                 if (_selectedImageFile != null)
                 {
                     product.ImagePath = await SaveImageAsync();
                 }
 
-                // No need to update CreatedAt timestamp for edits
             }
             else
             {
@@ -305,13 +282,8 @@ public partial class ListItemPage : ContentPage
                 };
             }
 
-            // Debug information
             Console.WriteLine($"{(_isEditMode ? "Updating" : "Saving")} product: {product.Name}, {product.Type}, {product.Price:C}");
-
-            // Ensure products table exists
             await _databaseService.CreateProductsTableAsync();
-
-            // Save to database (insert or update)
             int result;
             if (_isEditMode)
             {
@@ -329,14 +301,10 @@ public partial class ListItemPage : ContentPage
                 await DisplayAlert("Success",
                     _isEditMode ? "Product updated successfully!" : "Product listed successfully!",
                     "OK");
-
-                // Clear the form if not in edit mode
                 if (!_isEditMode)
                 {
                     ClearForm();
                 }
-
-                // Navigate back
                 await Navigation.PopAsync();
             }
             else
@@ -367,7 +335,7 @@ public partial class ListItemPage : ContentPage
         ProductDescriptionEditor.Text = string.Empty;
         ProductTypePicker.SelectedIndex = -1;
         PriceEntry.Text = string.Empty;
-        OnDeleteImageClicked(null, null); // Reset image state
+        OnDeleteImageClicked(null, null); 
     }
 
     private async Task<string> SaveImageAsync()
@@ -377,20 +345,15 @@ public partial class ListItemPage : ContentPage
 
         try
         {
-            // Create a unique filename
             var fileName = $"{Guid.NewGuid()}_{_selectedImageFile.FileName}";
 
-            // Get the app's local storage path
             var destinationPath = Path.Combine(
                 FileSystem.AppDataDirectory,
                 "ProductImages",
                 fileName
             );
-
-            // Ensure directory exists
             Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
 
-            // Copy the file
             using var sourceStream = await _selectedImageFile.OpenReadAsync();
             using var destinationStream = File.Create(destinationPath);
             await sourceStream.CopyToAsync(destinationStream);

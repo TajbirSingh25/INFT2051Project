@@ -187,7 +187,7 @@
                                     </Grid>
                                 </Frame>
 
-                                <!-- Add a tap gesture recognizer as an alternative way to handle selection -->
+                   
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnMainListingTapped" CommandParameter="{Binding .}"/>
                                 </Grid.GestureRecognizers>
@@ -242,8 +242,6 @@
                                         </StackLayout>
                                     </Grid>
                                 </Frame>
-
-                                <!-- Add a tap gesture recognizer as an alternative way to handle selection -->
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnSearchResultTapped" CommandParameter="{Binding .}"/>
                                 </Grid.GestureRecognizers>

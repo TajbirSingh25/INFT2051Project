@@ -17,31 +17,22 @@ namespace Mauiapp1.Views
             SearchResults = new ObservableCollection<Listing>();
             ResultsCollectionView.ItemsSource = SearchResults;
 
-            // Set the search bar text to the query
+       
             SearchBar.Text = searchQuery;
-
-            // Perform initial search
             PerformSearch(searchQuery);
         }
 
         private void PerformSearch(string searchQuery)
         {
-            // Clear previous results
             SearchResults.Clear();
 
             if (string.IsNullOrWhiteSpace(searchQuery))
                 return;
-
-            // For demo purposes, we'll add some mock data based on the search query
-            // In a real app, you would query your database or API
             var mockData = GetMockListings().Where(l =>
                 (l.Title?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
                 (l.Category?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
                 (l.Description?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false)
             ).ToList();
-
-            // In a real app, you would use your database service:
-            // var results = await _databaseService.SearchListingsAsync(searchQuery);
 
             foreach (var item in mockData)
             {
@@ -77,10 +68,7 @@ namespace Mauiapp1.Views
         {
             if (e.CurrentSelection.FirstOrDefault() is Listing selectedItem)
             {
-                // Reset selection
                 ResultsCollectionView.SelectedItem = null;
-
-                // Pass both the selected item and the search results to the detail page
                 await Navigation.PushAsync(new ListingDetailPage(selectedItem, SearchResults, _databaseService));
             }
         }

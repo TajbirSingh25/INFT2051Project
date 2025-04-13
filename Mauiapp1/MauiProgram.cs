@@ -19,10 +19,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Set up database path
         string dbPath = Path.Combine(FileSystem.AppDataDirectory, "app.db");
-
-        // Initialize chat database service (singleton instance)
         var chatDbService = ChatDatabaseService.Instance;
 
         // Register services
@@ -43,19 +40,16 @@ public static class MauiProgram
         builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddTransient<ProfilePage>();
-
-        // Add ChatPage registration
         builder.Services.AddTransient<Views.ChatPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
-        // Register DatabaseService with dependency injection
         builder.Services.AddSingleton<IDatabaseService>(serviceProvider =>
             new DatabaseService(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "products.db3")));  // Properly closed here
+                "products.db3")));  
 
         return builder.Build();
     }

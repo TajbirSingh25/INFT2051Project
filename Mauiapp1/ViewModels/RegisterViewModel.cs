@@ -99,7 +99,6 @@ namespace Mauiapp1.ViewModels
         private async Task GoToLogin()
         {
             Console.WriteLine("GoToLogin command invoked");
-            // Fix the navigation URI format here too
             await _navigationService.NavigateToAsync("///LoginPage");
         }
     }
