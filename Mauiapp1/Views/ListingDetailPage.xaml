@@ -136,6 +136,121 @@
                         Margin="0,0,0,20"
                         HorizontalOptions="Fill"
                         Clicked="OnMakeOfferClicked"/>
+
+                <!-- Main Listings Section -->
+                <Label Text="More Listings" 
+                       FontSize="18" 
+                       FontAttributes="Bold" 
+                       Margin="0,10,0,0"/>
+
+                <!-- Main Page Listings -->
+                <Label Text="Popular Items" 
+                       FontSize="16" 
+                       FontAttributes="Bold"
+                       Margin="0,5,0,0"/>
+
+                <CollectionView x:Name="MainListingsCollection"
+                                ItemsSource="{Binding MainListings}"
+                                HeightRequest="200"
+                                SelectionMode="Single"
+                                SelectionChanged="OnMainListingSelected">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" 
+                                          ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid WidthRequest="150">
+                                <Frame Padding="0"
+                                       CornerRadius="10"
+                                       HasShadow="True"
+                                       BorderColor="LightGray">
+                                    <Grid RowDefinitions="*, Auto">
+                                        <!-- Item Image -->
+                                        <Image Grid.Row="0"
+                                               Source="{Binding ImageUrl}"
+                                               Aspect="AspectFill"
+                                               HeightRequest="100"/>
+
+                                        <!-- Item Info -->
+                                        <StackLayout Grid.Row="1"
+                                                     BackgroundColor="White"
+                                                     Padding="8">
+                                            <Label Text="{Binding Title}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="12"
+                                                   LineBreakMode="TailTruncation"/>
+                                            <Label Text="{Binding Price, StringFormat='${0:N0}'}"
+                                                   TextColor="Green"
+                                                   FontSize="12"/>
+                                        </StackLayout>
+                                    </Grid>
+                                </Frame>
+
+                                <!-- Add a tap gesture recognizer as an alternative way to handle selection -->
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnMainListingTapped" CommandParameter="{Binding .}"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Search Results Listings (if applicable) -->
+                <Label x:Name="SearchResultsLabel"
+                       Text="Similar Items" 
+                       FontSize="16" 
+                       FontAttributes="Bold"
+                       Margin="0,15,0,0"
+                       IsVisible="{Binding HasSearchResults}"/>
+
+                <CollectionView x:Name="SearchResultsCollection"
+                                ItemsSource="{Binding SearchResults}"
+                                HeightRequest="200"
+                                SelectionMode="Single"
+                                SelectionChanged="OnSearchResultSelected"
+                                IsVisible="{Binding HasSearchResults}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" 
+                                          ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid WidthRequest="150">
+                                <Frame Padding="0"
+                                       CornerRadius="10"
+                                       HasShadow="True"
+                                       BorderColor="LightGray">
+                                    <Grid RowDefinitions="*, Auto">
+                                        <!-- Item Image -->
+                                        <Image Grid.Row="0"
+                                               Source="{Binding ImageUrl}"
+                                               Aspect="AspectFill"
+                                               HeightRequest="100"/>
+
+                                        <!-- Item Info -->
+                                        <StackLayout Grid.Row="1"
+                                                     BackgroundColor="White"
+                                                     Padding="8">
+                                            <Label Text="{Binding Title}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="12"
+                                                   LineBreakMode="TailTruncation"/>
+                                            <Label Text="{Binding Price, StringFormat='${0:N0}'}"
+                                                   TextColor="Green"
+                                                   FontSize="12"/>
+                                        </StackLayout>
+                                    </Grid>
+                                </Frame>
+
+                                <!-- Add a tap gesture recognizer as an alternative way to handle selection -->
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnSearchResultTapped" CommandParameter="{Binding .}"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

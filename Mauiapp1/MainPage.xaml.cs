@@ -168,8 +168,8 @@ namespace Mauiapp1
         {
             try
             {
-                // Create the detail page
-                var detailPage = new Views.ListingDetailPage(listing);
+                // Create the detail page and pass the listings collection
+                var detailPage = new Views.ListingDetailPage(listing, _databaseService);
 
                 // Navigate to it
                 await Navigation.PushAsync(detailPage);

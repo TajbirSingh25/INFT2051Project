@@ -80,12 +80,8 @@ namespace Mauiapp1.Views
                 // Reset selection
                 ResultsCollectionView.SelectedItem = null;
 
-                // Navigate to listing detail page
-                // In a real app, you would navigate to a detail page:
-                // await Navigation.PushAsync(new ListingDetailPage(selectedItem));
-
-                // For now, just show an alert
-                await DisplayAlert("Item Selected", $"You selected: {selectedItem.Title}", "OK");
+                // Pass both the selected item and the search results to the detail page
+                await Navigation.PushAsync(new ListingDetailPage(selectedItem, SearchResults, _databaseService));
             }
         }
     }
